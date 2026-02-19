@@ -26,8 +26,6 @@ public class PedidoProgramado extends Pedido{
         this.idCupon = idCupon;
     }
     
-    public void sebastiangay(){}
-    
     @Override
     public String toString() {
         return "PedidoProgramado{" + "idCupon=" + idCupon + '}';
