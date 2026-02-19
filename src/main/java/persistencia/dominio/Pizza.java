@@ -14,16 +14,18 @@ public class Pizza {
     private int idPizza;
     private String nombre;
     private String descripcion;
+    private TamañoPizza tamañoPizza;
     private double precio;
     private List<Ingrediente> ingredientes;
 
     public Pizza() {
     }
 
-    public Pizza(int idPizza, String nombre, String descripcion, double precio, List<Ingrediente> ingredientes) {
+    public Pizza(int idPizza, String nombre, String descripcion, TamañoPizza tamañoPizza, double precio, List<Ingrediente> ingredientes) {
         this.idPizza = idPizza;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.tamañoPizza = tamañoPizza;
         this.precio = precio;
         this.ingredientes = ingredientes;
     }
@@ -62,6 +64,16 @@ public class Pizza {
         this.descripcion = descripcion;
     }
 
+    public TamañoPizza getTamañoPizza() {
+        return tamañoPizza;
+    }
+
+    public void setTamañoPizza(TamañoPizza tamañoPizza) {
+        this.tamañoPizza = tamañoPizza;
+    }
+
+    
+    
     public double getPrecio() {
         return precio;
     }
