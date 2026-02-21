@@ -5,6 +5,9 @@
 package persistencia.dominio;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,8 +17,12 @@ public class PedidoExpress extends Pedido{
     private String pin;
     private String folio;
 
-    public PedidoExpress(String pin, String folio, int idPedido, EstadoPedido estado, String notasEntrega, LocalDate fecha, LocalDate fechaEntrega, double total) {
-        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total);
+    public PedidoExpress(){
+        super();
+    }
+    
+    public PedidoExpress(String pin, String folio, int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
+        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
         this.pin = pin;
         this.folio = folio;
     }

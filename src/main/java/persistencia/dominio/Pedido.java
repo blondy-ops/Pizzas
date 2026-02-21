@@ -5,6 +5,9 @@
 package persistencia.dominio;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,23 +17,36 @@ public class Pedido {
     private int idPedido;
     private EstadoPedido estado;
     private String notasEntrega;
-    private LocalDate fecha;
-    private LocalDate fechaEntrega;
+    private LocalDateTime fecha;
+    private LocalDateTime fechaEntrega;
     private double total;
 
+    protected List<DetallesPedido> detalles;
     
     public Pedido(){
-        
+        this.detalles = new ArrayList<>();
     }
 
-    public Pedido(int idPedido, EstadoPedido estado, String notasEntrega, LocalDate fecha, LocalDate fechaEntrega, double total) {
+    public Pedido(int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
         this.idPedido = idPedido;
-        this.estado = estado;
+        this.estado = estado; 
         this.notasEntrega = notasEntrega;
         this.fecha = fecha;
         this.fechaEntrega = fechaEntrega;
         this.total = total;
+        
+        this.detalles = detalles;
     }
+
+    public List<DetallesPedido> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetallesPedido> detalles) {
+        this.detalles = detalles;
+    }
+    
+    
 
     public int getIdPedido() {
         return idPedido;
@@ -56,19 +72,19 @@ public class Pedido {
         this.notasEntrega = notasEntrega;
     }
 
-    public LocalDate getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 
-    public LocalDate getFechaEntrega() {
+    public LocalDateTime getFechaEntrega() {
         return fechaEntrega;
     }
 
-    public void setFechaEntrega(LocalDate fechaEntrega) {
+    public void setFechaEntrega(LocalDateTime fechaEntrega) {
         this.fechaEntrega = fechaEntrega;
     }
 

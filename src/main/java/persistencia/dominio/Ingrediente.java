@@ -11,7 +11,15 @@ package persistencia.dominio;
 public class Ingrediente {
     private int idIngrediente;
     private String nombre;
-
+    
+    public Ingrediente(){
+        
+    }
+    
+    public Ingrediente(String nombre){
+        this.nombre = nombre;
+    }
+    
     public Ingrediente(int idIngrediente, String nombre) {
         this.idIngrediente = idIngrediente;
         this.nombre = nombre;

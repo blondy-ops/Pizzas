@@ -5,11 +5,18 @@
 package presentacion;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import persistencia.dominio.Pedido;
 
 /**
@@ -22,7 +29,7 @@ public class VentanaRealizarPago extends JFrame {
     private Pedido pedidoActual;
      
     //componentes que se usaran para la interfaz
-    private JTable tableResumen;
+    private JTable tablaResumen;
     private JTextField txtCupon;
     private JLabel lblTotalMonto;
     private JButton btnPagar;
@@ -32,30 +39,200 @@ public class VentanaRealizarPago extends JFrame {
      */
     public VentanaRealizarPago(Pedido pedido) {
         this.pedidoActual = pedido;
-      
+        
         //definir tamaño y comportamiento al cerrarse
         setTitle("Realizar Pago");//titulo
         setSize(900, 600); //tamaño
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //para cerrar solo esta ventana no la app
         
         //llamamos al metodo para iniciar componenets
-        iniciarComponentes();
+        iniciarComponentes(); 
         
         //METODOS QUE SE IMPLEMENTAN DESPUES PARA QUE FUNCIONE
-        //cargarDatosDelPedidoEnLaTable();
-        //calcularYMostrarTotal();
+        cargarDatosDelPedidoEnLaTabla();
+        calcularYMostrarTotal();
     }
 
     private void iniciarComponentes(){
         //se pone el layout principal de la ventana para acomodarla
         setLayout(new BorderLayout());
         
-        //crear la tabla (inicializar tabla y ScrollPane y
-        String[] columnas = {"Pizza", "Cantidad", "Precio Unitario"};
-        Pedido[][] datosPedido = {
-            {pedido.get
-        }
         tablaResumen = new JTable();
+        JScrollPane scrollPane = new JScrollPane(tablaResumen);
+        add(scrollPane, BorderLayout.CENTER);
+        
+        // ZONA SUR
+        JPanel panelInferior = new JPanel();
+        panelInferior.setLayout(new BoxLayout(panelInferior, BoxLayout.Y_AXIS));
+        
+        //Fila 1: Cupon (Usamos flowlayout que acomoda de izquierda a derecha por defecto
+        JPanel panelCupon = new JPanel();
+        panelCupon.add(new JLabel("Codigo de cupon:"));
+        txtCupon = new JTextField(10); //campo de texto de 10 columnas de ancho
+        panelCupon.add(txtCupon);
+        
+        //BOTON CUPON-------------------------------------------------------------------------
+        JButton btnAplicarCupon = new JButton("Aplicar");
+        
+        //agregamos el evento
+        btnAplicarCupon.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aplicarCuponAction(); // Llamamos a un método separado para tenerlo ordenado
+            }
+        });
+        
+        panelCupon.add(btnAplicarCupon);
+        
+        // FIla 2 total
+        JPanel panelTotal = new JPanel();
+        //se hace la fuente del total mas grande y en negrita para que resalte
+        Font fuenteTotal = new Font("Arial", Font.BOLD, 18);
+        JLabel lblTextoTotal = new JLabel("Total a pagar: $");
+        lblTextoTotal.setFont(fuenteTotal);
+        
+        lblTotalMonto = new JLabel("0.00");
+        lblTotalMonto.setFont(fuenteTotal);
+        
+        panelTotal.add(lblTextoTotal);
+        panelTotal.add(lblTotalMonto);
+        
+        //Fila 3 Boton de pagar
+        JPanel panelBotonPagar = new JPanel();
+        btnPagar = new JButton("PAGAR ORDEN");
+        btnPagar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnPagar.setBackground(new Color(34, 139, 34)); // Color verde oscuro
+        btnPagar.setForeground(Color.WHITE); // Texto blanco
+        
+        
+        btnPagar.addActionListener(e -> {
+            new VentanaEstadoPedido(pedidoActual);
+            dispose();
+        });
+        
+        
+        
+        panelBotonPagar.add(btnPagar);
+        
+        
+      
+        
+        //se aplica las 3 filas en el panel inferior
+        panelInferior.add(panelCupon);
+        panelInferior.add(panelTotal);
+        panelInferior.add(panelBotonPagar);
+        
+        //agregamos el panel inferior al sur de la ventana
+        add(panelInferior, BorderLayout.SOUTH);
+    }
+    
+    private void aplicarCuponAction() {
+        // 1. Extraemos el texto y le quitamos espacios en blanco extra
+        String codigoIngresado = txtCupon.getText().trim();
+
+        // Validamos que no esté vacío
+        if (codigoIngresado.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor ingrese un código de cupón.", "Atención", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            // ------------------------------------------------------------------
+            // AQUÍ LLAMARÍAMOS A TU CAPA DE NEGOCIO (BO) EN EL FUTURO
+            // Ejemplo:
+            // ICuponBO cuponBO = FabricaBOs.obtenerCuponBO();
+            // CuponDTO cuponValido = cuponBO.validarCupon(codigoIngresado);
+            // ------------------------------------------------------------------
+
+            // --- SIMULACIÓN TEMPORAL (Mientras programas tu BO y DAO) ---
+            if (codigoIngresado.equalsIgnoreCase("PAPAJOHN20")) {
+                
+                // Simulamos que el cupón da un 20% de descuento (0.20)
+                double descuentoProcentaje = 0.20; 
+                double cantidadDescontada = pedidoActual.getTotal() * descuentoProcentaje;
+                double nuevoTotal = pedidoActual.getTotal() - cantidadDescontada;
+
+                // Actualizamos el objeto pedido actual
+                pedidoActual.setTotal(nuevoTotal);
+
+                // Actualizamos la etiqueta en la pantalla (reutilizando tu método)
+                calcularYMostrarTotal();
+
+                // MOSTRAMOS ALERTA DE ÉXITO
+                JOptionPane.showMessageDialog(this, 
+                        "¡Cupón aplicado con éxito!\nSe descontaron: $" + String.format("%.2f", cantidadDescontada), 
+                        "Éxito", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                
+                // Deshabilitamos el botón y el texto para que no lo apliquen 2 veces
+                txtCupon.setEditable(false);
+                // btnAplicarCupon.setEnabled(false); // (Si tu botón fuera global, harías esto)
+
+            } else {
+                // Simulamos el error que lanzaría tu BO
+                throw new Exception("El cupón ingresado no existe, ha expirado o alcanzó su límite de usos.");
+            }
+            // --- FIN DE SIMULACIÓN ---
+
+        } catch (Exception ex) {
+            // MOSTRAMOS ALERTA DE ERROR
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Cupón Inválido", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
+    
+    private void cargarDatosDelPedidoEnLaTabla(){
+        // 1. Definimos los nombres de las columnas
+    String[] nombresColumnas = {"Pizza", "Cantidad", "Precio Unitario", "Subtotal"};
+    
+    // 2. Creamos el modelo (el 0 significa que inicia sin filas)
+    DefaultTableModel modeloTabla = new DefaultTableModel(nombresColumnas, 0);
+    
+    // 3. Le asignamos este modelo a nuestra tabla visual
+    tablaResumen.setModel(modeloTabla);
+    
+    // 4. Si el pedido existe y tiene detalles, los agregamos
+    // (Asegúrate de tener el método getDetalles() en tu clase Pedido que regrese un List<DetallePedido>)
+    if (this.pedidoActual != null && this.pedidoActual.getDetalles() != null) {
+        
+        // Recorremos cada pizza (detalle) en el pedido
+        for (persistencia.dominio.DetallesPedido detalle : this.pedidoActual.getDetalles()) {
+            
+            // Calculamos el subtotal de esta fila
+            double subtotalFila = detalle.getCantidad() * detalle.getPrecioUnitario();
+            
+            // Asumiendo que tu DetallePedido tiene un objeto Pizza adentro
+            // Si solo guardaste el ID o el nombre directo, ajusta esta línea a tu código
+            String nombrePizza = detalle.getPizza().getNombre();
+            
+            // Creamos un "paquete" (Arreglo de Objetos) con los datos en el orden de las columnas
+            Object[] fila = new Object[]{
+                nombrePizza,
+                detalle.getCantidad(),
+                String.format("$%.2f", detalle.getPrecioUnitario()),
+                String.format("$%.2f", subtotalFila)
+            };
+            
+            // Agregamos la fila al modelo, y la tabla se actualizará automáticamente
+            modeloTabla.addRow(fila);
+        }
+    }
+    }
+    
+    private void calcularYMostrarTotal(){
+        // 1. Verificamos que haya un pedido
+    if (this.pedidoActual != null) {
+        
+        // 2. Extraemos el total (que es double)
+        double total = this.pedidoActual.getTotal();
+        
+        // 3. Lo convertimos a texto con formato de 2 decimales
+        String totalTexto = String.format("%.2f", total);
+        
+        // 4. Se lo pasamos a la etiqueta
+        lblTotalMonto.setText(totalTexto);
+    }
     }
     
     /**
@@ -86,37 +263,7 @@ public class VentanaRealizarPago extends JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VentanaRealizarPago.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VentanaRealizarPago.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VentanaRealizarPago.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VentanaRealizarPago.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VentanaRealizarPago().setVisible(true);
-            }
-        });
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

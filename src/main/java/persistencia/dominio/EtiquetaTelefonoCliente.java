@@ -9,5 +9,5 @@ package persistencia.dominio;
  * @author Benjamin
  */
 public enum EtiquetaTelefonoCliente {
-    Casa,Trabajo,Movil
+    Casa,Trabajo,Movil;
 }

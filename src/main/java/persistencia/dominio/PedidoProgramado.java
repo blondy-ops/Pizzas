@@ -5,6 +5,8 @@
 package persistencia.dominio;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *
@@ -13,9 +15,14 @@ import java.time.LocalDate;
 public class PedidoProgramado extends Pedido{
     private int idCupon;
 
-    public PedidoProgramado(int idCupon, int idPedido, EstadoPedido estado, String notasEntrega, LocalDate fecha, LocalDate fechaEntrega, double total) {
-        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total);
+    public PedidoProgramado(){
+        
+    }
+    
+    public PedidoProgramado(int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, int idCupon, List<DetallesPedido> detalles) {
+        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
         this.idCupon = idCupon;
+      
     }
 
     public int getIdCupon() {

@@ -17,3 +17,4 @@ public interface IConexionBD {
     
     Connection crearConexion() throws SQLException;
 }
+ 

@@ -13,17 +13,17 @@ import java.time.LocalDate;
  */
 public class Cupon {
     private int idCupon;
-    private int codigo;
-    private double descuento; //big decimal aqui????? 
+    private String codigo;
+    private double descuento; 
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private int usosMaximos;
     private int usosActuales;
-
+    
     public Cupon() {
     }
 
-    public Cupon(int idCupon, int codigo, double descuento, LocalDate fechaInicio, LocalDate fechaFin, int usosMaximos, int usosActuales) {
+    public Cupon(int idCupon, String codigo, double descuento, LocalDate fechaInicio, LocalDate fechaFin, int usosMaximos, int usosActuales) {
         this.idCupon = idCupon;
         this.codigo = codigo;
         this.descuento = descuento;
@@ -32,7 +32,7 @@ public class Cupon {
         this.usosMaximos = usosMaximos;
         this.usosActuales = usosActuales;
     }
-
+    
     public int getIdCupon() {
         return idCupon;
     }
@@ -41,11 +41,11 @@ public class Cupon {
         this.idCupon = idCupon;
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 
@@ -93,7 +93,5 @@ public class Cupon {
     public String toString() {
         return "Cupon{" + "idCupon=" + idCupon + ", codigo=" + codigo + ", descuento=" + descuento + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", usosMaximos=" + usosMaximos + ", usosActuales=" + usosActuales + '}';
     }
-    
-    
     
 }

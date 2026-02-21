@@ -11,7 +11,7 @@ package persistencia.dominio;
 public class DetallesPedido {
     private int idDetallesPedido;
     private int idPedido;
-    private int idPizza;
+    private Pizza pizza;
     private int cantidad;
     private String notasPreparacion;
     private double precioUnitario;
@@ -20,23 +20,33 @@ public class DetallesPedido {
     }
 
     //para insertar
-    public DetallesPedido(int idPedido, int idPizza, int cantidad, String notasPreparacion, double precioUnitario) {
+    public DetallesPedido(int idPedido, int cantidad, String notasPreparacion, double precioUnitario) {
         this.idPedido = idPedido;
-        this.idPizza = idPizza;
+        this.pizza = pizza;
         this.cantidad = cantidad;
         this.notasPreparacion = notasPreparacion;
         this.precioUnitario = precioUnitario;
     }
 
-    public DetallesPedido(int idDetallesPedido, int idPedido, int idPizza, int cantidad, String notasPreparacion, double precioUnitario) {
+    public DetallesPedido(int idDetallesPedido, int idPedido, Pizza pizza, int cantidad, String notasPreparacion, double precioUnitario) {
         this.idDetallesPedido = idDetallesPedido;
         this.idPedido = idPedido;
-        this.idPizza = idPizza;
+        this.pizza = pizza;
         this.cantidad = cantidad;
         this.notasPreparacion = notasPreparacion;
         this.precioUnitario = precioUnitario;
     }
 
+    public Pizza getPizza() {
+        return pizza;
+    }
+
+    public void setPizza(Pizza pizza) {
+        this.pizza = pizza;
+    }
+
+    
+    
     public int getIdDetallesPedido() {
         return idDetallesPedido;
     }
@@ -53,14 +63,7 @@ public class DetallesPedido {
         this.idPedido = idPedido;
     }
 
-    public int getIdPizza() {
-        return idPizza;
-    }
-
-    public void setIdPizza(int idPizza) {
-        this.idPizza = idPizza;
-    }
-
+    
     public int getCantidad() {
         return cantidad;
     }
@@ -87,7 +90,7 @@ public class DetallesPedido {
 
     @Override
     public String toString() {
-        return "DetallesPedido{" + "idDetallesPedido=" + idDetallesPedido + ", idPedido=" + idPedido + ", idPizza=" + idPizza + ", cantidad=" + cantidad + ", notasPreparacion=" + notasPreparacion + ", precioUnitario=" + precioUnitario + '}';
+        return "DetallesPedido{" + "idDetallesPedido=" + idDetallesPedido + ", idPedido=" + idPedido + ", idPizza=" + pizza.getIdPizza() + ", cantidad=" + cantidad + ", notasPreparacion=" + notasPreparacion + ", precioUnitario=" + precioUnitario + '}';
     }
     
     
