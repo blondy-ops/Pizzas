@@ -20,7 +20,7 @@ import persistencia.excepciones.PersistenciaException;
  * @author Benjamin
  */
 public class CuponDAO implements ICuponDAO{
-
+    
     private final IConexionBD conexionBD;
     
     public CuponDAO(IConexionBD conexionBD){
