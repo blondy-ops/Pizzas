@@ -27,6 +27,12 @@ public class CuponDAO implements ICuponDAO{
         this.conexionBD = conexionBD;
     }
     
+    /**
+     * Metodo para consultar si un codigo de cupon esta activo en la base de datso
+     * @param codigo
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public Cupon consultarCuponPorCodigo(String codigo) throws PersistenciaException {
         //se crea la consulta del sql
@@ -35,11 +41,13 @@ public class CuponDAO implements ICuponDAO{
         try(Connection conn = conexionBD.crearConexion();
             PreparedStatement ps = conn.prepareStatement(sql)){
             
+            //reemplazar el signo de interrogacion con el codigo en string
             ps.setString(1, codigo);
             
+            //ejecuta la linea de la consulta
             try(ResultSet rs = ps.executeQuery()){
                 if(rs.next()){
-                    Cupon cupon = new Cupon();
+                    Cupon cupon = new Cupon(); //crea objeto tipo cupon
                     cupon.setIdCupon(rs.getInt("idCupon"));
                     cupon.setCodigo("codigo");
                     cupon.setDescuento(rs.getDouble("descuento"));
@@ -49,20 +57,20 @@ public class CuponDAO implements ICuponDAO{
                     
                     //la fecha fin puede ser NULA en tu base de datos
                     Date fechaFinSql = rs.getDate("fechaFIN");
-                    if(fechaFinSql != null){
-                        cupon.setFechaFin(fechaFinSql.toLocalDate());
+                    if(fechaFinSql != null){ //valida si esta vacia
+                        cupon.setFechaFin(fechaFinSql.toLocalDate()); //se cambai a formato sin hora (solo dia mes y año)
                     }
                     
-                    cupon.setUsosMaximos(rs.getInt("usosMaximos"));
+                    cupon.setUsosMaximos(rs.getInt("usosMaximos")); //saca del resultado de la consulta de la base de datos cada dato y lo pone en el objeto cupon que se creo como copia
                     cupon.setUsosActuales(rs.getInt("usos"));
                     
-                    return cupon;
+                    return cupon; //se devuelve el cupon encontrado en la base de datos
                 } else {
-                    return null; // cuando no se encontro el cupon
+                    return null; // cuando no se encontro el cupon 
                 }
             }
         } catch (SQLException ex){
-            throw new PersistenciaException("Error al consultar el cupon de la BD");
+            throw new PersistenciaException("Error al consultar el cupon de la BD"); //cuando da la excepcion de la conexion a la bd
         }
     }
     

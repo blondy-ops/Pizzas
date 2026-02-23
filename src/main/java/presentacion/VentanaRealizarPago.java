@@ -4,6 +4,7 @@
  */
 package presentacion;
 
+import fabricas.BO.FabricaBOs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -17,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import negocio.BOs.ICuponBO;
+import negocio.DTOs.CuponDTO;
 import persistencia.dominio.Pedido;
 
 /**
@@ -137,43 +140,32 @@ public class VentanaRealizarPago extends JFrame {
         }
 
         try {
-            // ------------------------------------------------------------------
-            // AQUÍ LLAMARÍAMOS A TU CAPA DE NEGOCIO (BO) EN EL FUTURO
-            // Ejemplo:
-            // ICuponBO cuponBO = FabricaBOs.obtenerCuponBO();
-            // CuponDTO cuponValido = cuponBO.validarCupon(codigoIngresado);
-            // ------------------------------------------------------------------
-
-            // --- SIMULACIÓN TEMPORAL (Mientras programas tu BO y DAO) ---
-            if (codigoIngresado.equalsIgnoreCase("PAPAJOHN20")) {
-                
-                // Simulamos que el cupón da un 20% de descuento (0.20)
-                double descuentoProcentaje = 0.20; 
-                double cantidadDescontada = pedidoActual.getTotal() * descuentoProcentaje;
-                double nuevoTotal = pedidoActual.getTotal() - cantidadDescontada;
-
-                // Actualizamos el objeto pedido actual
-                pedidoActual.setTotal(nuevoTotal);
-
-                // Actualizamos la etiqueta en la pantalla (reutilizando tu método)
-                calcularYMostrarTotal();
-
-                // MOSTRAMOS ALERTA DE ÉXITO
-                JOptionPane.showMessageDialog(this, 
-                        "¡Cupón aplicado con éxito!\nSe descontaron: $" + String.format("%.2f", cantidadDescontada), 
-                        "Éxito", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                
-                // Deshabilitamos el botón y el texto para que no lo apliquen 2 veces
-                txtCupon.setEditable(false);
-                // btnAplicarCupon.setEnabled(false); // (Si tu botón fuera global, harías esto)
-
-            } else {
-                // Simulamos el error que lanzaría tu BO
-                throw new Exception("El cupón ingresado no existe, ha expirado o alcanzó su límite de usos.");
-            }
-            // --- FIN DE SIMULACIÓN ---
-
+            //1. Llamamos al cerebro (BO)
+            ICuponBO cuponBO = FabricaBOs.obtenerCuponBO(); //PONERLO BIEN EN LA FABRICA PARA QUE SIRVA
+            
+            //si el cupon es malo tira la excepcion el BO y la cacha el catch
+            //si el cupon es bueno nos regresa el DTO con el descuento
+            CuponDTO cuponValido = cuponBO.validarYObtenerCupon(codigoIngresado);
+            
+            //2. Calculamos el descuento 
+            double descuentoPorcentaje = cuponValido.getDescuento() / 100.0;
+            
+            double cantidadDescontada = pedidoActual.getTotal() * descuentoPorcentaje;
+            double nuevoTotal = pedidoActual.getTotal() - cantidadDescontada;
+            
+            //3, Actualizamos la venta
+            pedidoActual.setTotal(nuevoTotal);
+            //se le asigna el id del cupon usado al pedido
+            //pedidoActual.setIdCupon(cuponValido.getIdCupon()); (no)
+            
+            calcularYMostrarTotal();
+            
+            JOptionPane.showMessageDialog(this, 
+                    "¡Cupón aplicado!\nSe descontaron: $" + String.format("%.2f", cantidadDescontada), 
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            
+            txtCupon.setEditable(false);
+            
         } catch (Exception ex) {
             // MOSTRAMOS ALERTA DE ERROR
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Cupón Inválido", JOptionPane.ERROR_MESSAGE);
