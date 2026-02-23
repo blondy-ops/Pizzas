@@ -4,7 +4,9 @@
  */
 package com.sistemapizzeria;
 
+import negocio.excepciones.NegocioException;
 import presentacion.InicioFrame;
+import presentacion.InterfazPedidosProgramados;
 
 /**
  *
@@ -15,9 +17,10 @@ public class Test {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        new InicioFrame();
-        //sds
+    public static void main(String[] args) throws NegocioException {
+        //new InicioFrame();
+        ///ejgrshthtr
+        new InterfazPedidosProgramados();
     }
     
 }

@@ -11,42 +11,26 @@ import java.util.List;
  * @author Benjamin
  */
 public class Pizza {
-    private int idPizza;
+      private int idPizza;
     private String nombre;
     private String descripcion;
     private TamañoPizza tamañoPizza;
     private double precio;
-    private List<Ingrediente> ingredientes;
-    
+    private String imagen;
+    private DisponibilidadPizza disponibilidad;
+
     public Pizza() {
     }
-    
-    public Pizza(String nombre, String descripcion, TamañoPizza tamañoPizza, double precio, List<Ingrediente> ingredientes) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.tamañoPizza = tamañoPizza;
-        this.precio = precio;
-        this.ingredientes = ingredientes;
-    }
-    
-    public Pizza(int idPizza, String nombre, String descripcion, TamañoPizza tamañoPizza, double precio, List<Ingrediente> ingredientes) {
+
+    public Pizza(int idPizza, String nombre, String descripcion, TamañoPizza tamañoPizza, double precio, String imagen, DisponibilidadPizza disponibilidad) {
         this.idPizza = idPizza;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tamañoPizza = tamañoPizza;
         this.precio = precio;
-        this.ingredientes = ingredientes;
+        this.imagen = imagen;
+        this.disponibilidad = disponibilidad;
     }
-
-    public List<Ingrediente> getIngredientes() {
-        return ingredientes;
-    }
-
-    public void setIngredientes(List<Ingrediente> ingredientes) {
-        this.ingredientes = ingredientes;
-    }
-
-    
 
     public int getIdPizza() {
         return idPizza;
@@ -71,7 +55,7 @@ public class Pizza {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    
+
     public TamañoPizza getTamañoPizza() {
         return tamañoPizza;
     }
@@ -80,8 +64,6 @@ public class Pizza {
         this.tamañoPizza = tamañoPizza;
     }
 
-    
-    
     public double getPrecio() {
         return precio;
     }
@@ -89,11 +71,26 @@ public class Pizza {
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-    
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
+    public DisponibilidadPizza getDisponibilidad() {
+        return disponibilidad;
+    }
+
+    public void setDisponibilidad(DisponibilidadPizza disponibilidad) {
+        this.disponibilidad = disponibilidad;
+    }
+
     @Override
     public String toString() {
-        return "Pizza{" + "idPizza=" + idPizza + ", nombre=" + nombre + ", descripcion=" + descripcion + ", precio=" + precio + '}';
+        return "Pizza{" + "idPizza=" + idPizza + ", nombre=" + nombre + ", descripcion=" + descripcion + ", tama\u00f1oPizza=" + tamañoPizza + ", precio=" + precio + ", imagen=" + imagen + ", disponibilidad=" + disponibilidad + '}';
     }
-    
-    
+
 }

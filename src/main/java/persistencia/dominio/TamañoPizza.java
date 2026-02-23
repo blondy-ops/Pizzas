@@ -9,5 +9,5 @@ package persistencia.dominio;
  * @author Benjamin
  */
 public enum TamañoPizza {
-    Chica, Mediana, Grande;
+    chica, mediana, grande;
 }

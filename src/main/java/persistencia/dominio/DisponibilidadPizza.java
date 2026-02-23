@@ -9,5 +9,5 @@ package persistencia.dominio;
  * @author Benjamin
  */
 public enum DisponibilidadPizza {
-    Disponible,No_Disponible;
+    disponible,no_disponible;
 }
