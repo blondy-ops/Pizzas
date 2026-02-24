@@ -20,12 +20,22 @@ public class PedidoExpress extends Pedido{
     public PedidoExpress(){
         super();
     }
-    
-    public PedidoExpress(String pin, String folio, int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
-        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
+
+    public PedidoExpress(String pin, String folio, int idPedido, Integer idUsuario, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
+        super(idPedido, idUsuario, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
         this.pin = pin;
         this.folio = folio;
     }
+
+    public List<DetallesPedido> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetallesPedido> detalles) {
+        this.detalles = detalles;
+    }
+    
+    
 
     public String getPin() {
         return pin;
@@ -47,7 +57,5 @@ public class PedidoExpress extends Pedido{
     public String toString() {
         return "PedidoExpress{" + "pin=" + pin + ", folio=" + folio + '}';
     }
-    
-    
     
 }

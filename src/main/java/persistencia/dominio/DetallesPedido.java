@@ -92,6 +92,10 @@ public class DetallesPedido {
     public String toString() {
         return "DetallesPedido{" + "idDetallesPedido=" + idDetallesPedido + ", idPedido=" + idPedido + ", idPizza=" + pizza.getIdPizza() + ", cantidad=" + cantidad + ", notasPreparacion=" + notasPreparacion + ", precioUnitario=" + precioUnitario + '}';
     }
+
+    public int getIdPizza() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
     
 }

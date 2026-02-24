@@ -16,6 +16,7 @@ public class CarritoDTO {
     private int cantidad; 
     private double precioUnitario;
     private double Subtotal;
+    private String notaIndividual = ""; //inicia vacio para que no salga como null si se llega a imprimir
 
     public CarritoDTO() {
     }
@@ -27,6 +28,16 @@ public class CarritoDTO {
         this.precioUnitario = precioUnitario;
         this.Subtotal = Subtotal;
     }
+
+    public String getNotaIndividual() {
+        return notaIndividual;
+    }
+
+    public void setNotaIndividual(String notaIndividual) {
+        this.notaIndividual = notaIndividual;
+    }
+    
+    
 
     public String getNombre() {
         return nombre;

@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class Pedido {
     private int idPedido;
+    private Integer idUsuario;
     private EstadoPedido estado;
     private String notasEntrega;
     private LocalDateTime fecha;
@@ -27,16 +28,26 @@ public class Pedido {
         this.detalles = new ArrayList<>();
     }
 
-    public Pedido(int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
+    public Pedido(int idPedido, Integer idUsuario, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
         this.idPedido = idPedido;
-        this.estado = estado; 
+        this.idUsuario = idUsuario;
+        this.estado = estado;
         this.notasEntrega = notasEntrega;
         this.fecha = fecha;
         this.fechaEntrega = fechaEntrega;
         this.total = total;
-        
         this.detalles = detalles;
     }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+    
+    
 
     public List<DetallesPedido> getDetalles() {
         return detalles;

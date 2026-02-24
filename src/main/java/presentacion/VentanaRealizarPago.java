@@ -73,25 +73,42 @@ public class VentanaRealizarPago extends JFrame {
         panelInferior.setLayout(new BoxLayout(panelInferior, BoxLayout.Y_AXIS));
 
         //Fila 1: Cupon (Usamos flowlayout que acomoda de izquierda a derecha por defecto
-        JPanel panelCupon = new JPanel();
-        panelCupon.add(new JLabel("Codigo de cupon:"));
+        JPanel panelOpciones = new JPanel();
+        panelOpciones.add(new JLabel("Codigo de cupon:"));
         txtCupon = new JTextField(10); //campo de texto de 10 columnas de ancho
-        panelCupon.add(txtCupon);
+        panelOpciones.add(txtCupon);
 
         //BOTON CUPON-------------------------------------------------------------------------
         JButton btnAplicarCupon = new JButton("Aplicar");
 
-        //agregamos el evento
+        //agregamos el evento del boton cupon
         btnAplicarCupon.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aplicarCuponAction(); // Llamamos a un método separado para tenerlo ordenado
             }
         });
+        panelOpciones.add(btnAplicarCupon);
 
-        panelCupon.add(btnAplicarCupon);
+        // NUEVO BOTON NOTA GENERAL---------------------------------
+        JButton btnNotaGeneral = new JButton("Agregar Nota General");
+        btnNotaGeneral.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt){
+                agregarNotaGeneralAction();
+            }
+        });
 
-        // FIla 2 total
+        // NUEVO BOTON NOTA INDIVIDUAL -------------------------------
+        JButton btnNotaIndividual = new JButton("Agregar Nota a Pizza");
+        btnNotaIndividual.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt){
+                agregarNotaIndividualAction();
+            }
+        });
+        
+        // FIla 2 total----------------------------------------
         JPanel panelTotal = new JPanel();
         //se hace la fuente del total mas grande y en negrita para que resalte
         Font fuenteTotal = new Font("Arial", Font.BOLD, 18);
@@ -119,7 +136,7 @@ public class VentanaRealizarPago extends JFrame {
         panelBotonPagar.add(btnPagar);
 
         //se aplica las 3 filas en el panel inferior
-        panelInferior.add(panelCupon);
+        panelInferior.add(panelOpciones);
         panelInferior.add(panelTotal);
         panelInferior.add(panelBotonPagar);
 
@@ -127,6 +144,69 @@ public class VentanaRealizarPago extends JFrame {
         add(panelInferior, BorderLayout.SOUTH);
     }
 
+    public void agregarNotaIndividualAction(){
+        // obtenemos el numero de la fila que el usuario selecciono con el cursor utilizando el metodo getSelectedRow() de las JTable
+        int filaSeleccionada = tablaResumen.getSelectedRow();
+        
+        //validacion si no a selecciionado nada
+        if(filaSeleccionada == -1){
+            JOptionPane.showMessageDialog(this,
+                    "Por favor seleccione la fila de la pizza a la que desea agregar una nota individual dandole click con el cursor",
+                    "Atencion",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try{
+            //1. obtenemos la lista de DTOs
+            List<CarritoDTO> pizzas = carritoBO.obtenerCarrito();
+            
+            //2. extraemos la pizza exacta que el usuario selecciono 
+            CarritoDTO pizzaSeleccionada = pizzas.get(filaSeleccionada);
+            
+            //3. mostramos el pop-up
+            String nota = JOptionPane.showInputDialog(this,
+                    "Escribe la nota especial para: " + pizzaSeleccionada.getNombre(),
+                    "Nota Individual",
+                    JOptionPane.PLAIN_MESSAGE);
+            
+            //4. si escribio algo, lo guardamos en el DTO
+            if(nota != null && !nota.trim().isEmpty()){
+                pizzaSeleccionada.setNotaIndividual(nota.trim());
+                JOptionPane.showMessageDialog(this, "Nota guardada para esta pizza");
+            }
+        } catch(NegocioException ex){
+            JOptionPane.showMessageDialog(this, "Error al leer el carrito: " + ex.getMessage());
+        }
+    }
+    
+    
+    public void agregarNotaGeneralAction() {
+        //1. se muestra el pop-up para que el usuario escriba
+        String nota = JOptionPane.showInputDialog(this,
+                "Escribe la nota general para la entrga del pedido:",
+                "Nota General",
+                JOptionPane.PLAIN_MESSAGE);
+
+        //2. se valida que el usuario no haya cancelado y que haya escrito algo
+        if (nota != null && !nota.trim().isEmpty()) {
+            try {
+                //3. lo guardamos en nuestro objeto memoria
+                this.carritoBO.setNotaGeneral(nota.trim());
+
+                //opcional: mostramos confirmacion
+                JOptionPane.showMessageDialog(this,
+                        "Nota guardada: " + nota,
+                        "Exito",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (NegocioException ex) {
+                //si el bo rechaza la nota se muestra el error
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    
     private void aplicarCuponAction() {
         // 1. Extraemos el texto y le quitamos espacios en blanco extra
         String codigoIngresado = txtCupon.getText().trim();

@@ -13,32 +13,43 @@ import java.util.List;
  * @author Benjamin
  */
 public class PedidoProgramado extends Pedido{
-    private int idCupon;
-
+    private Integer idCupon;
+    
     public PedidoProgramado(){
         
     }
     
-    public PedidoProgramado(int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, int idCupon, List<DetallesPedido> detalles) {
-        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
+    public PedidoProgramado(Integer idCupon, int idPedido, Integer idUsuario, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
+        super(idPedido, idUsuario, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
         this.idCupon = idCupon;
-      
     }
 
-    public int getIdCupon() {
+    
+
+    public List<DetallesPedido> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetallesPedido> detalles) {
+        this.detalles = detalles;
+    }
+
+    public Integer getIdCupon() {
         return idCupon;
     }
 
-    public void setIdCupon(int idCupon) {
+    public void setIdCupon(Integer idCupon) {
         this.idCupon = idCupon;
     }
+    
+    
+    
+    
     
     @Override
     public String toString() {
         return "PedidoProgramado{" + "idCupon=" + idCupon + '}';
     }
-
-    
     
     
 }
