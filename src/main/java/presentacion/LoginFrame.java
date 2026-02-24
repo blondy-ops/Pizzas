@@ -10,6 +10,11 @@ package presentacion;
  */
 import javax.swing.*;
 import java.awt.*;
+import negocio.BOs.IUsuarioBO;
+import negocio.BOs.UsuarioBO;
+import negocio.DTOs.UsuarioDTO;
+import persistencia.Conexion.ConexionBD;
+import persistencia.dominio.TipoUsuario;
 
 public class LoginFrame extends JFrame {
 
@@ -69,7 +74,7 @@ public class LoginFrame extends JFrame {
         lblRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new RegistroDatosFrame();
+                new RegistroCompletoFrame();
                 dispose();
             }
         });
@@ -85,14 +90,38 @@ public class LoginFrame extends JFrame {
 
     private void validarLogin() {
 
-        String usuario = txtUsuario.getText();
+        String correo = txtUsuario.getText();
         String password = new String(txtPassword.getPassword());
 
-        if (usuario.equals("admin") && password.equals("1234")) {
-            JOptionPane.showMessageDialog(this, "Bienvenido");
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
+        try {
+
+            ConexionBD conexion = new ConexionBD();
+            IUsuarioBO bo = new UsuarioBO(conexion);
+
+            UsuarioDTO usuario = bo.iniciarSesion(correo, password);
+
+            if (usuario != null) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Bienvenido " + usuario.getCorreo());
+
+                if (usuario.getTipoUsuario() == TipoUsuario.Empleado) {
+                    new InterfazPedidosProgramados();
+                } else {
+                    new InterfazPedidosProgramados();
+                }
+
+                dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Correo o contraseña incorrectos");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
+
     }
 
     private void estilizarBoton(JButton btn) {
