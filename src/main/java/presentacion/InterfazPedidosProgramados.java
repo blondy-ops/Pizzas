@@ -189,23 +189,54 @@ public class InterfazPedidosProgramados extends JFrame {
 
         double subtotal = precioUnitario * cantidad;
         double total = 0;
-
+        
+        CarritoDTO carritoDTO = new CarritoDTO(nombrePizza, tamano, cantidad, precioUnitario, subtotal);
         try {
-            CarritoDTO carritoDTO = new CarritoDTO(nombrePizza, tamano, cantidad, precioUnitario, subtotal);
             carritoBO.agregarCarrito(carritoDTO);
             total = carritoBO.calcularTotal();
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "No se pudo agregar el producto al carrito.");
         }
 
-        JLabel item = new JLabel(" - " + nombrePizza
+        JPanel panelItem = new JPanel();
+        panelItem.setLayout(new BorderLayout());
+        panelItem.setMaximumSize(new Dimension(280, 60));
+
+        JLabel lblItem = new JLabel(
+                "<html> - " + nombrePizza
                 + " | Tamaño: " + tamano
                 + " | Cant: " + cantidad
-                + " | $" + precioUnitario
-                + " c/u | Subtotal: $" + subtotal);
+                + "<br> $" + precioUnitario
+                + " c/u | Subtotal: $" + subtotal
+                + "</html>"
+        );
 
-        panelLista.add(item);
+        JButton btnCancelar = new JButton("X");
+        btnCancelar.setBackground(Color.RED);
+        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setPreferredSize(new Dimension(45, 30));
+
+        btnCancelar.addActionListener(e -> {
+            try {
+                carritoBO.aliminarProduco(carritoDTO);
+                panelLista.remove(panelItem);
+
+                double nuevoTotal = carritoBO.calcularTotal();
+                lblTotal.setText("$" + nuevoTotal + " pesos");
+
+                panelLista.revalidate();
+                panelLista.repaint();
+            } catch (NegocioException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo cancelar el producto");
+            }
+        });
+
+        panelItem.add(lblItem, BorderLayout.CENTER);
+        panelItem.add(btnCancelar, BorderLayout.EAST);
+
+        panelLista.add(panelItem);
         panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
+
         lblTotal.setText("$" + total + " pesos");
 
         panelLista.revalidate();

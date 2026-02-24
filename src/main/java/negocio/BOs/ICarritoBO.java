@@ -21,4 +21,6 @@ public interface ICarritoBO {
     
     public List<CarritoDTO> obtenerCarrito() throws NegocioException;
     
+    public void aliminarProduco(CarritoDTO carrito) throws NegocioException;
+    
 }

@@ -4,6 +4,8 @@
  */
 package negocio.DTOs;
 
+import java.util.Objects;
+
 
 /**
  *
@@ -52,5 +54,6 @@ public class CarritoDTO {
     public String toString() {
         return "CarritoDTO{" + "nombre=" + nombre + ", tama\u00f1o=" + tamaño + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario + ", Subtotal=" + Subtotal + '}';
     }
+    
 
 }
