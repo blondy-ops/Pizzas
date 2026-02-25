@@ -45,7 +45,7 @@ public class PedidoDAO implements IPedidoDAO{
         }catch(SQLException ex){
             throw new PersistenciaException("Error al contar los pedidos activos en la BD", ex);
         }
-             
+        
     }
     
     @Override

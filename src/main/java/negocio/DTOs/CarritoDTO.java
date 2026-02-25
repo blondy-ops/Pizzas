@@ -36,8 +36,6 @@ public class CarritoDTO {
     public void setNotaIndividual(String notaIndividual) {
         this.notaIndividual = notaIndividual;
     }
-    
-    
 
     public String getNombre() {
         return nombre;

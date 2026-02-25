@@ -98,7 +98,8 @@ public class VentanaRealizarPago extends JFrame {
                 agregarNotaGeneralAction();
             }
         });
-
+        panelOpciones.add(btnNotaGeneral);
+        
         // NUEVO BOTON NOTA INDIVIDUAL -------------------------------
         JButton btnNotaIndividual = new JButton("Agregar Nota a Pizza");
         btnNotaIndividual.addActionListener(new java.awt.event.ActionListener() {
@@ -107,6 +108,7 @@ public class VentanaRealizarPago extends JFrame {
                 agregarNotaIndividualAction();
             }
         });
+        panelOpciones.add(btnNotaIndividual);
         
         // FIla 2 total----------------------------------------
         JPanel panelTotal = new JPanel();
@@ -187,7 +189,7 @@ public class VentanaRealizarPago extends JFrame {
                 "Escribe la nota general para la entrga del pedido:",
                 "Nota General",
                 JOptionPane.PLAIN_MESSAGE);
-
+        
         //2. se valida que el usuario no haya cancelado y que haya escrito algo
         if (nota != null && !nota.trim().isEmpty()) {
             try {
