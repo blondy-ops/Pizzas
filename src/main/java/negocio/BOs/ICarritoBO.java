@@ -31,4 +31,6 @@ public interface ICarritoBO {
     
     public Integer getIdCuponAplicado();
     
+    public void eliminarProduco(CarritoDTO carrito) throws NegocioException;
+    
 }

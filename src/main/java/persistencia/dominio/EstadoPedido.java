@@ -9,5 +9,5 @@ package persistencia.dominio;
  * @author Benjamin
  */
 public enum EstadoPedido {
-    PENDIENTE,EN_PREPARACION,LISTO,ENTREGADO,CANCELADO,NO_RECLAMADO;
+    pendiente,listo,entregado,cancelado,no_reclamado;
 }

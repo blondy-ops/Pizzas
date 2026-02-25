@@ -8,9 +8,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import negocio.excepciones.NegocioException;
 
 /**
  *
@@ -43,6 +47,12 @@ public class InicioFrame extends JFrame{
         fondo.add(panelBotones);
 
         btnPedido.addActionListener(e -> {
+            try {
+                InterfazPedidosProgramados ipe=new InterfazPedidosProgramados();
+                ipe.setVisible(true);
+            } catch (NegocioException ex) {
+                JOptionPane.showMessageDialog(this,"Error: no se pudo abrir el menu");
+            }
             new PedidoFrame();
             dispose();
         });

@@ -8,7 +8,7 @@ import persistencia.dominio.TipoUsuario;
 
 /**
  *
- * @author Benjamin
+ * @author munos
  */
 public class UsuarioDTO {
     private final int idUsuario;
@@ -39,4 +39,3 @@ public class UsuarioDTO {
     }
     
 }
-

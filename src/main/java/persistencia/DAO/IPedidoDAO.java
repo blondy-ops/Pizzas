@@ -7,6 +7,7 @@ package persistencia.DAO;
 import java.util.List;
 import persistencia.dominio.DetallesPedido;
 import persistencia.dominio.Pedido;
+import persistencia.dominio.PedidoExpress;
 import persistencia.dominio.PedidoProgramado;
 import persistencia.excepciones.PersistenciaException;
 
@@ -15,17 +16,11 @@ import persistencia.excepciones.PersistenciaException;
  * @author Benjamin
  */
 public interface IPedidoDAO {
-    //void crearPedido(Pedido pedido) throws PersistenciaException;
-    
-    //Pedido consultarPedidoPorTelefono(int telefono) throws PersistenciaException;
-    
-    //List<Pedido> buscarPedidosActivosPorCliente(int telefono) throws PersistenciaException;
-    
-    public int contarPedidosActivosPorCliente(int idUsuario) throws PersistenciaException;
-    
-    public int insertarPedido(Pedido pedido) throws PersistenciaException;
-    
+    public int CrearPedido(Pedido pedido) throws PersistenciaException;
     public void agregarDetallePedido(DetallesPedido detallePedido) throws PersistenciaException;
-    
+    public void agregarPedidoExpres(PedidoExpress pedidoExpres) throws PersistenciaException;
+    public int contarPedidosActivosPorCliente(int idUsuario) throws PersistenciaException;
     public void agregarPedidoProgramado(PedidoProgramado pedidoProgramado) throws PersistenciaException;
+    public PedidoExpress obtenerExpressPorFolio(String folio)throws PersistenciaException;
+    public int insertarPedido(Pedido pedido) throws PersistenciaException;
 }

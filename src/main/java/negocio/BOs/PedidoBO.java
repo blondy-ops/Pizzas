@@ -4,9 +4,23 @@
  */
 package negocio.BOs;
 
-import negocio.DTOs.UsuarioDTO;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import negocio.DTOs.CarritoDTO;
+import negocio.DTOs.PedidoCompletoDTO;
+import negocio.DTOs.PedidoDTO;
+import negocio.DTOs.PedidoExpressDTO;
 import negocio.excepciones.NegocioException;
+import persistencia.Conexion.ConexionBD;
 import persistencia.DAO.IPedidoDAO;
+import persistencia.DAO.PedidoDAO;
+import persistencia.DAO.UsuarioDAO;
+import persistencia.dominio.DetallesPedido;
 import persistencia.dominio.Pedido;
 import persistencia.dominio.PedidoExpress;
 import persistencia.dominio.PedidoProgramado;
@@ -14,63 +28,181 @@ import persistencia.excepciones.PersistenciaException;
 
 /**
  *
- * @author Benjamin
+ * @author jorge
  */
-public class PedidoBO implements IPedidoBO{
-    
-    //1. se declara la herramienta (la dependencia)
-    private final IPedidoDAO pedidoDAO;
-    
-    //2. pedimos la herramienta en el constructor (inyeccion de dependencias)
-    public PedidoBO(IPedidoDAO pedidoDAO){
-        this.pedidoDAO = pedidoDAO;
+public class PedidoBO implements IPedidoBO {
+
+    private IPedidoDAO pedidoDAO;
+
+    public PedidoBO(ConexionBD conexion) {
+        this.pedidoDAO = new PedidoDAO(conexion);
     }
-    
-    //private final IPedidoProgramadoDAO pedidoProgramadoDAO;
-    /*
+
     @Override
-    public void procesarCompra(ICarritoBO carrito, UsuarioDTO usuario) throws NegocioException {
+    public int crearPedido(PedidoCompletoDTO pedidoCompleto) throws NegocioException {
+        if (pedidoCompleto == null) {
+            throw new NegocioException("Error: El pedido esta vacio");
+        }
+
+        if (pedidoCompleto.getCarrito() == null || pedidoCompleto.getCarrito().isEmpty()) {
+            throw new NegocioException("Error: El carrito esta vacio");
+        }
+
+        PedidoDTO pedidoDTO = pedidoCompleto.getPedido();
+
         try {
-            // 1. Armamos el pedido general
-            Pedido pedidoGeneral = new Pedido();
-            pedidoGeneral.setNotasEntrega(carrito.getNotaGeneral());
-            pedidoGeneral.setTotal(carrito.calcularTotal());
+            if (pedidoDTO.getIdUsuario() != null) {
+                int pedidosActivos = pedidoDAO.contarPedidosActivosPorCliente(pedidoDTO.getIdUsuario());
 
-            // Si hay usuario, le asignamos su ID al pedido general
-            if (usuario != null) {
-                pedidoGeneral.setIdUsuario(usuario.getIdUsuario());
+                if (pedidosActivos >= 3) {
+                    throw new NegocioException(
+                            "Error: Tiene 3 pedidos activos");
+                }
             }
 
-            // 2. Le pedimos al DAO que lo guarde y nos devuelva el ID generado
-            int idPedidoGenerado = pedidoDAO.insertarPedido(pedidoGeneral);
-            
-            // --- AQUÍ SEGUIREMOS CON LA LÓGICA DE PROGRAMADO / EXPRESS ---
+            Pedido pedido = new Pedido();
+            pedido.setIdUsuario(pedidoDTO.getIdUsuario());
+            pedido.setEstado("pendiente");
+            pedido.setFecha(LocalDateTime.now());
+            pedido.setNotasEntrega(pedidoDTO.getNotasEntrega());
+            pedido.setTotal(pedidoDTO.getTotal());
 
-            if (usuario != null) {
-                // --- ES UN PEDIDO PROGRAMADO ---
-                PedidoProgramado programado = new PedidoProgramado();
-                programado.setIdPedido(idPedidoGenerado); // El ID mágico que nos dio el DAO principal
-                programado.setIdCupon(carrito.getIdCuponAplicado()); // Puede traer el ID o null
-                
-                pedidoProgramadoDAO.insertar(programado);
-                
-            } else {
-                // --- ES UN PEDIDO EXPRESS ---
-                PedidoExpress express = new PedidoExpress();
-                express.setIdPedido(idPedidoGenerado);
-                
-                // ¡ALERTA! Según tu base de datos, necesitamos dos cosas más:
-                // express.setFolio(...);
-                // express.setPin(...);
-                
-                pedidoExpressDAO.insertar(express);
+            int idGenerado = pedidoDAO.CrearPedido(pedido);
+
+            for (CarritoDTO x : pedidoCompleto.getCarrito()) {
+                DetallesPedido detalle = new DetallesPedido();
+                detalle.setIdPedido(idGenerado);
+                detalle.setIdPizza(x.getIdPizza());
+                detalle.setCantidad(x.getCantidad());
+                //detalle.setNotasPreparacion(x.getNotas());
+                detalle.setPrecioUnitario(x.getPrecioUnitario());
+                pedidoDAO.agregarDetallePedido(detalle);
             }
-            
+            return idGenerado;
+
         } catch (PersistenciaException ex) {
-            // Atrapamos el error de BD y lo convertimos en error de negocio
-            throw new NegocioException("Error al registrar el pedido en el sistema.", ex);
+            throw new NegocioException("No se pudo contar los pedidos activos por cliente.");
         }
     }
-    */
-    
+
+    @Override
+    public PedidoExpressDTO crearPedidoExpress(PedidoCompletoDTO pedidoCompleto) throws NegocioException {
+        if (pedidoCompleto == null) {
+            throw new NegocioException("El pedido esta vacio");
+        }
+
+        if (pedidoCompleto.getCarrito() == null || pedidoCompleto.getCarrito().isEmpty()) {
+            throw new NegocioException("El carrito esta vacio");
+        }
+
+        try {
+            int idGenerado = crearPedido(pedidoCompleto);
+
+            String pinInicial = generarPin();
+            String pinHash = hashPin(pinInicial);
+
+            String folio = "EXP-" + idGenerado;
+
+            PedidoExpress pe = new PedidoExpress();
+            pe.setIdPedido(idGenerado);
+            pe.setPin(pinHash);
+            pe.setFolio(folio);
+
+            pedidoDAO.agregarPedidoExpres(pe);
+            return new PedidoExpressDTO(idGenerado, pinInicial, folio);
+
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error: error al crear el pedido express");
+        }
+    }
+
+    @Override
+    public int CrearPedidoProgramado(PedidoCompletoDTO pedidoCompleto) throws NegocioException {
+        if (pedidoCompleto == null) {
+            throw new NegocioException("El pedido esta vacio");
+        }
+        if (pedidoCompleto.getCarrito() == null || pedidoCompleto.getCarrito().isEmpty()) {
+            throw new NegocioException("El carrito esta vacio");
+        }
+        try {
+            int idGenerado = crearPedido(pedidoCompleto);
+            PedidoProgramado pp = new PedidoProgramado(idGenerado, pedidoCompleto.getIdCupon());
+            pedidoDAO.agregarPedidoProgramado(pp);
+            return idGenerado;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error: error al ccrear el pedido programado");
+        }
+    }
+
+    @Override
+    public boolean validarPin(String folio, String pinIngresado) throws NegocioException {
+        //valido que el folio no este vacio 
+        if (folio == null || folio.isBlank()) {
+            throw new NegocioException("Error: Folio vacío");
+        }
+        //valido que el pin no estte vacio 
+        if (pinIngresado == null || pinIngresado.isBlank()) {
+            throw new NegocioException("Error: PIN vacío");
+        }
+
+        try {
+            //buscamos el pedido en la base de datos 
+            PedidoExpress express = pedidoDAO.obtenerExpressPorFolio(folio);
+            //si validamos que el pedido no este vecio, si esta vacio quiere decir que el folio es invalido 
+            if (express == null) {
+                throw new NegocioException("Error: No existe el folio");
+            }
+            //hasheamos el pin
+            String hashIngresado = hashPin(pinIngresado);
+            //comparo el pin hasheado con los de la base de datos 
+            return hashIngresado.equals(express.getPin());
+
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error: error al validar pin", e);
+        }
+    }
+
+    private String hashPin(String pin) throws NegocioException {
+        try {
+            //uso el algoridmo SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            //convierto el pin a bytes
+            byte[] hashBytes = digest.digest(pin.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder hexString = new StringBuilder();
+            //combierto bytes a texto hexadecimal 
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new NegocioException("Error al hashear PIN", e);
+        }
+    }
+
+    private String generarPin() {
+        SecureRandom random = new SecureRandom();
+        int pin = 1000 + random.nextInt(9000);
+        return String.valueOf(pin);
+    }
+
+    @Override
+    public int contarPedidosActivos(int idUsuario) throws NegocioException {
+        if (idUsuario <= 0) {
+            throw new NegocioException("Id de usuario inválido");
+        }
+        try {
+            return pedidoDAO.contarPedidosActivosPorCliente(idUsuario);
+        } catch (PersistenciaException e) {
+
+            throw new NegocioException(
+                    "Error al contar pedidos activos", e);
+        }
+    }
+
 }

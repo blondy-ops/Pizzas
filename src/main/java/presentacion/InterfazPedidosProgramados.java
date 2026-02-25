@@ -164,11 +164,17 @@ public class InterfazPedidosProgramados extends JFrame {
 
         for (PizzaDTO x : pizzas) {
             String rutaImg = "/imagenes/" + x.getImagen();
-            panelCentro.add(CrearPizza(x.getNombre(), x.getPrecio(), x.getTamano().toString(), rutaImg));
+            panelCentro.add(CrearPizza(
+                    x.getIdPizza(),
+                    x.getNombre(),
+                    x.getPrecio(),
+                    x.getTamano().toString(),
+                    rutaImg
+            ));
         }
     }
 
-    public void agregegarCarrito(String nombrePizza, String tamano, double precioUnitario) {
+    public void agregegarCarrito(int idPizza, String nombrePizza, String tamano, double precioUnitario) {
         String cantidadStrin = JOptionPane.showInputDialog(this, "Cuantas pizzas desea agregar?");
 
         if (cantidadStrin == null) {
@@ -190,22 +196,54 @@ public class InterfazPedidosProgramados extends JFrame {
         double subtotal = precioUnitario * cantidad;
         double total = 0;
 
+        CarritoDTO carritoDTO = new CarritoDTO(idPizza,nombrePizza,tamano,cantidad,precioUnitario,subtotal);
+        System.out.println("ID PIZZA GUARDADO: " + carritoDTO.getIdPizza());
         try {
-            CarritoDTO carritoDTO = new CarritoDTO(nombrePizza, tamano, cantidad, precioUnitario, subtotal);
             carritoBO.agregarCarrito(carritoDTO);
             total = carritoBO.calcularTotal();
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "No se pudo agregar el producto al carrito.");
         }
 
-        JLabel item = new JLabel(" - " + nombrePizza
+        JPanel panelItem = new JPanel();
+        panelItem.setLayout(new BorderLayout());
+        panelItem.setMaximumSize(new Dimension(280, 60));
+
+        JLabel lblItem = new JLabel(
+                "<html> - " + nombrePizza
                 + " | Tamaño: " + tamano
                 + " | Cant: " + cantidad
-                + " | $" + precioUnitario
-                + " c/u | Subtotal: $" + subtotal);
+                + "<br> $" + precioUnitario
+                + " c/u | Subtotal: $" + subtotal
+                + "</html>"
+        );
 
-        panelLista.add(item);
+        JButton btnCancelar = new JButton("X");
+        btnCancelar.setBackground(Color.RED);
+        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setPreferredSize(new Dimension(45, 30));
+
+        btnCancelar.addActionListener(e -> {
+            try {
+                carritoBO.eliminarProduco(carritoDTO);
+                panelLista.remove(panelItem);
+
+                double nuevoTotal = carritoBO.calcularTotal();
+                lblTotal.setText("$" + nuevoTotal + " pesos");
+
+                panelLista.revalidate();
+                panelLista.repaint();
+            } catch (NegocioException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo cancelar el producto");
+            }
+        });
+
+        panelItem.add(lblItem, BorderLayout.CENTER);
+        panelItem.add(btnCancelar, BorderLayout.EAST);
+
+        panelLista.add(panelItem);
         panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
+
         lblTotal.setText("$" + total + " pesos");
 
         panelLista.revalidate();
@@ -213,7 +251,7 @@ public class InterfazPedidosProgramados extends JFrame {
 
     }
 
-    public JPanel CrearPizza(String nombre, double Precio, String tamano, String rutaImg) {
+    public JPanel CrearPizza(int idPizza, String nombre, double Precio, String tamano, String rutaImg) {
         //creamos un panel que contendra  todo 
         JPanel panel = new JPanel();
         // le aagregamos un border layout 
@@ -275,7 +313,7 @@ public class InterfazPedidosProgramados extends JFrame {
         panel.add(btnagregar, BorderLayout.SOUTH);
 
         btnagregar.addActionListener(e -> {
-            agregegarCarrito(nombre, tamano, Precio);
+            agregegarCarrito(idPizza, nombre, tamano, Precio);
         });
         return panel;
     }

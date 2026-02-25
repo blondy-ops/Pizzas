@@ -41,7 +41,7 @@ public class PizzasBO implements IPizzasBO {
             for (Pizza x : pizzas) {
 
                 if (x.getDisponibilidad() == DisponibilidadPizza.disponible) {
-                    PizzaDTO dto = new PizzaDTO(x.getNombre(), x.getPrecio(), x.getTamañoPizza(), x.getImagen(),x.getDisponibilidad());
+                    PizzaDTO dto = new PizzaDTO(x.getIdPizza(),x.getNombre(), x.getPrecio(), x.getTamañoPizza(), x.getImagen(),x.getDisponibilidad());
                     listaDTO.add(dto);
                 }
             }

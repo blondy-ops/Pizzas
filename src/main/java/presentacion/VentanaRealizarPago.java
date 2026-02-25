@@ -21,9 +21,13 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import negocio.BOs.ICarritoBO;
 import negocio.BOs.ICuponBO;
+import negocio.BOs.IUsuarioBO;
+import negocio.BOs.UsuarioBO;
 import negocio.DTOs.CarritoDTO;
 import negocio.DTOs.CuponDTO;
+import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
+import persistencia.Conexion.ConexionBD;
 import persistencia.dominio.Pedido;
 
 /**
@@ -34,6 +38,7 @@ public class VentanaRealizarPago extends JFrame {
 
     //referencia actual al pedido que se esta procesando
     private ICarritoBO carritoBO;
+    private IUsuarioBO usuario;
 
     //componentes que se usaran para la interfaz
     private JTable tablaResumen;
@@ -45,7 +50,9 @@ public class VentanaRealizarPago extends JFrame {
      * Creates new form VentanaRealizarPago
      */
     public VentanaRealizarPago(ICarritoBO carritoBO) {
+        ConexionBD conn = new ConexionBD();
         this.carritoBO = carritoBO;
+        usuario=new UsuarioBO(conn);
 
         //definir tamaño y comportamiento al cerrarse
         setTitle("Realizar Pago");//titulo
@@ -131,7 +138,15 @@ public class VentanaRealizarPago extends JFrame {
         btnPagar.setForeground(Color.WHITE); // Texto blanco
 
         btnPagar.addActionListener(e -> {
-          Pedido p1=new Pedido();
+            UsuarioDTO usDTO=UsuarioBO.obtenerUsuarioRegistrado();
+            if (usDTO == null) {
+                System.out.println("Pedido expres");
+            } else {
+                System.out.println("Es pedido programado");
+                UsuarioDTO us=UsuarioBO.obtenerUsuarioRegistrado();
+                System.out.println(us.getIdUsuario());
+            }
+            Pedido p1 = new Pedido();
             new VentanaEstadoPedido(p1);
             dispose();
         });
@@ -144,6 +159,7 @@ public class VentanaRealizarPago extends JFrame {
 
         //agregamos el panel inferior al sur de la ventana
         add(panelInferior, BorderLayout.SOUTH);
+
     }
 
     public void agregarNotaIndividualAction(){
@@ -231,11 +247,10 @@ public class VentanaRealizarPago extends JFrame {
             double descuentoPorcentaje = cuponValido.getDescuento() / 100.0;
 
             double cantidadDescontada = carritoBO.calcularTotal() * descuentoPorcentaje;
-            double nuevoTotal = carritoBO.calcularTotal()- cantidadDescontada;
+            double nuevoTotal = carritoBO.calcularTotal() - cantidadDescontada;
 
             //se le asigna el id del cupon usado al pedido
             //pedidoActual.setIdCupon(cuponValido.getIdCupon()); (no)
-            
             calcularYMostrarTotal();
 
             JOptionPane.showMessageDialog(this,
@@ -266,16 +281,16 @@ public class VentanaRealizarPago extends JFrame {
         try {
             pizzas = carritoBO.obtenerCarrito();
             for (CarritoDTO x : pizzas) {
-                
-               Object[] fila={
-                 x.getNombre(),
-                   x.getCantidad(),
-                   String.format("$%.2f", x.getPrecioUnitario()),
-                   String.format("$%.2f", x.getSubtotal())
-               };
-               modeloTabla.addRow(fila);
+
+                Object[] fila = {
+                    x.getNombre(),
+                    x.getCantidad(),
+                    String.format("$%.2f", x.getPrecioUnitario()),
+                    String.format("$%.2f", x.getSubtotal())
+                };
+                modeloTabla.addRow(fila);
             }
-            
+
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "Error: No se pudo obtener el carrito.");
         }
@@ -283,18 +298,18 @@ public class VentanaRealizarPago extends JFrame {
     }
 
     private void calcularYMostrarTotal() {
-      
+
         try {
             // 2. Extraemos el total (que es double)
             double total = carritoBO.calcularTotal();
-            
-             // 3. Lo convertimos a texto con formato de 2 decimales
+
+            // 3. Lo convertimos a texto con formato de 2 decimales
             String totalTexto = String.format("%.2f", total);
 
             // 4. Se lo pasamos a la etiqueta
             lblTotalMonto.setText(totalTexto);
         } catch (NegocioException e) {
-            JOptionPane.showMessageDialog(this,"Error: Error al calcular el total");
+            JOptionPane.showMessageDialog(this, "Error: Error al calcular el total");
         }
     }
 

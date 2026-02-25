@@ -4,13 +4,15 @@
  */
 package negocio.DTOs;
 
+import java.util.Objects;
+
 
 /**
  *
  * @author jorge
  */
 public class CarritoDTO {
-    
+    private int idPizza;
     private String nombre;
     private String tamaño;
     private int cantidad; 
@@ -21,13 +23,24 @@ public class CarritoDTO {
     public CarritoDTO() {
     }
 
-    public CarritoDTO(String nombre, String tamaño, int cantidad, double precioUnitario, double Subtotal) {
+    public CarritoDTO(int idPizza, String nombre, String tamaño, int cantidad, double precioUnitario, double Subtotal) {
+        this.idPizza = idPizza;
         this.nombre = nombre;
         this.tamaño = tamaño;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.Subtotal = Subtotal;
     }
+
+    public int getIdPizza() {
+        return idPizza;
+    }
+
+    public void setIdPizza(int idPizza) {
+        this.idPizza = idPizza;
+    }
+    
+    
 
     public String getNotaIndividual() {
         return notaIndividual;
@@ -59,7 +72,8 @@ public class CarritoDTO {
 
     @Override
     public String toString() {
-        return "CarritoDTO{" + "nombre=" + nombre + ", tama\u00f1o=" + tamaño + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario + ", Subtotal=" + Subtotal + '}';
+        return "CarritoDTO{" + "idPizza=" + idPizza + ", nombre=" + nombre + ", tama\u00f1o=" + tamaño + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario + ", Subtotal=" + Subtotal + '}';
     }
+    
 
 }

@@ -59,6 +59,12 @@ public class CarritoBO implements ICarritoBO {
     public List<CarritoDTO> obtenerCarrito() throws NegocioException {
             return this.ListaCarrito;
     }
+
+    @Override
+    public void eliminarProduco(CarritoDTO carrito) throws NegocioException {
+        ListaCarrito.remove(carrito);
+    }
+    
     
 
 }

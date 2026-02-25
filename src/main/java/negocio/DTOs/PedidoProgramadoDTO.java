@@ -2,18 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package persistencia.dominio;
+package negocio.DTOs;
 
 /**
  *
- * @author Benjamin
+ * @author jorge
  */
-public class PedidoProgramado {
-
+public class PedidoProgramadoDTO {
     private int idPedido;
     private Integer idCupon;
 
-    public PedidoProgramado(int idPedido, Integer idCupon) {
+    public PedidoProgramadoDTO() {
+    }
+
+    public PedidoProgramadoDTO(int idPedido, Integer idCupon) {
         this.idPedido = idPedido;
         this.idCupon = idCupon;
     }
@@ -26,13 +28,9 @@ public class PedidoProgramado {
         return idCupon;
     }
 
-    public void setIdCupon(Integer idCupon) {
-        this.idCupon = idCupon;
-    }
-
     @Override
     public String toString() {
-        return "PedidoProgramado{" + "idPedido=" + idPedido + ", idCupon=" + idCupon + '}';
+        return "PedidoProgramadoDTO{" + "idPedido=" + idPedido + ", idCupon=" + idCupon + '}';
     }
     
 }

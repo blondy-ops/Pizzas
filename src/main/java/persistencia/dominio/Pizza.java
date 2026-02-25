@@ -11,7 +11,7 @@ import java.util.List;
  * @author Benjamin
  */
 public class Pizza {
-      private int idPizza;
+    private int idPizza;
     private String nombre;
     private String descripcion;
     private TamañoPizza tamañoPizza;

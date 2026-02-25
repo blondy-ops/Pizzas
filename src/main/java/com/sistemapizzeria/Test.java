@@ -18,9 +18,9 @@ public class Test {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws NegocioException {
-        //new InicioFrame();
+        new InicioFrame();
         ///ejgrshthtr
-        new InterfazPedidosProgramados();
+        //new InterfazPedidosProgramados();
     }
     
     

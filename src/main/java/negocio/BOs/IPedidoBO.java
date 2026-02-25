@@ -4,13 +4,24 @@
  */
 package negocio.BOs;
 
-import negocio.DTOs.UsuarioDTO;
+import negocio.DTOs.PedidoCompletoDTO;
+import negocio.DTOs.PedidoExpressDTO;
 import negocio.excepciones.NegocioException;
 
 /**
  *
- * @author Benjamin
+ * @author jorge
  */
 public interface IPedidoBO {
-    //public void procesarCompra(ICarritoBO carrito, UsuarioDTO usuario) throws NegocioException;
+    
+    public int crearPedido(PedidoCompletoDTO pedidoCompleto) throws NegocioException;
+    
+    public PedidoExpressDTO crearPedidoExpress(PedidoCompletoDTO pedidoCompleto) throws NegocioException;
+    
+    public int CrearPedidoProgramado(PedidoCompletoDTO pedidoCompleto) throws NegocioException;
+    
+    public int contarPedidosActivos(int idUsuario) throws NegocioException;
+    
+    boolean validarPin(String folio, String pinIngresado) throws NegocioException;
+    
 }
