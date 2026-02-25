@@ -13,18 +13,26 @@ import java.util.List;
  *
  * @author Benjamin
  */
-public class PedidoExpress extends Pedido{
+public class PedidoExpress{
+   private int idPedido;
     private String pin;
     private String folio;
 
-    public PedidoExpress(){
-        super();
+    public PedidoExpress() {
     }
-    
-    public PedidoExpress(String pin, String folio, int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
-        super(idPedido, estado, notasEntrega, fecha, fechaEntrega, total, detalles);
+
+    public PedidoExpress(int idPedido, String pin, String folio) {
+        this.idPedido = idPedido;
         this.pin = pin;
         this.folio = folio;
+    }
+
+    public int getIdPedido() {
+        return idPedido;
+    }
+
+    public void setIdPedido(int idPedido) {
+        this.idPedido = idPedido;
     }
 
     public String getPin() {
@@ -45,9 +53,7 @@ public class PedidoExpress extends Pedido{
 
     @Override
     public String toString() {
-        return "PedidoExpress{" + "pin=" + pin + ", folio=" + folio + '}';
+        return "PedidoExpress{" + "idPedido=" + idPedido + ", pin=" + pin + ", folio=" + folio + '}';
     }
-    
-    
     
 }

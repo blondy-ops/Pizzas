@@ -164,11 +164,17 @@ public class InterfazPedidosProgramados extends JFrame {
 
         for (PizzaDTO x : pizzas) {
             String rutaImg = "/imagenes/" + x.getImagen();
-            panelCentro.add(CrearPizza(x.getNombre(), x.getPrecio(), x.getTamano().toString(), rutaImg));
+            panelCentro.add(CrearPizza(
+                    x.getIdPizza(),
+                    x.getNombre(),
+                    x.getPrecio(),
+                    x.getTamano().toString(),
+                    rutaImg
+            ));
         }
     }
 
-    public void agregegarCarrito(String nombrePizza, String tamano, double precioUnitario) {
+    public void agregegarCarrito(int idPizza, String nombrePizza, String tamano, double precioUnitario) {
         String cantidadStrin = JOptionPane.showInputDialog(this, "Cuantas pizzas desea agregar?");
 
         if (cantidadStrin == null) {
@@ -189,8 +195,9 @@ public class InterfazPedidosProgramados extends JFrame {
 
         double subtotal = precioUnitario * cantidad;
         double total = 0;
-        
-        CarritoDTO carritoDTO = new CarritoDTO(nombrePizza, tamano, cantidad, precioUnitario, subtotal);
+
+        CarritoDTO carritoDTO = new CarritoDTO(idPizza,nombrePizza,tamano,cantidad,precioUnitario,subtotal);
+        System.out.println("ID PIZZA GUARDADO: " + carritoDTO.getIdPizza());
         try {
             carritoBO.agregarCarrito(carritoDTO);
             total = carritoBO.calcularTotal();
@@ -244,7 +251,7 @@ public class InterfazPedidosProgramados extends JFrame {
 
     }
 
-    public JPanel CrearPizza(String nombre, double Precio, String tamano, String rutaImg) {
+    public JPanel CrearPizza(int idPizza, String nombre, double Precio, String tamano, String rutaImg) {
         //creamos un panel que contendra  todo 
         JPanel panel = new JPanel();
         // le aagregamos un border layout 
@@ -306,7 +313,7 @@ public class InterfazPedidosProgramados extends JFrame {
         panel.add(btnagregar, BorderLayout.SOUTH);
 
         btnagregar.addActionListener(e -> {
-            agregegarCarrito(nombre, tamano, Precio);
+            agregegarCarrito(idPizza, nombre, tamano, Precio);
         });
         return panel;
     }

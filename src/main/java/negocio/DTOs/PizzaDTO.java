@@ -12,6 +12,7 @@ import persistencia.dominio.TamañoPizza;
  * @author jorge
  */
 public class PizzaDTO {
+    private int idPizza;
     private String nombre;
     private double precio;
     private TamañoPizza tamano;
@@ -21,12 +22,17 @@ public class PizzaDTO {
     public PizzaDTO() {
     }
 
-    public PizzaDTO(String nombre, double precio, TamañoPizza tamano, String imagen, DisponibilidadPizza disponibilidad) {
+    public PizzaDTO(int idPizza, String nombre, double precio, TamañoPizza tamano, String imagen, DisponibilidadPizza disponibilidad) {
+        this.idPizza = idPizza;
         this.nombre = nombre;
         this.precio = precio;
         this.tamano = tamano;
         this.imagen = imagen;
         this.disponibilidad = disponibilidad;
+    }
+
+    public int getIdPizza() {
+        return idPizza;
     }
 
     public String getNombre() {
@@ -51,8 +57,7 @@ public class PizzaDTO {
 
     @Override
     public String toString() {
-        return "PizzaDTO{" + "nombre=" + nombre + ", precio=" + precio + ", tamano=" + tamano + ", imagen=" + imagen + ", disponibilidad=" + disponibilidad + '}';
+        return "PizzaDTO{" + "idPizza=" + idPizza + ", nombre=" + nombre + ", precio=" + precio + ", tamano=" + tamano + ", imagen=" + imagen + ", disponibilidad=" + disponibilidad + '}';
     }
-   
-    
+
 }

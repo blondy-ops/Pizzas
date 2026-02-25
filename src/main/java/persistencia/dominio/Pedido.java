@@ -15,38 +15,27 @@ import java.util.List;
  */
 public class Pedido {
     private int idPedido;
+    private Integer idUsuario;
     private EstadoPedido estado;
     private String notasEntrega;
     private LocalDateTime fecha;
+    private LocalDateTime fechaListo; 
     private LocalDateTime fechaEntrega;
     private double total;
 
-    protected List<DetallesPedido> detalles;
-    
-    public Pedido(){
-        this.detalles = new ArrayList<>();
+    public Pedido() {
     }
 
-    public Pedido(int idPedido, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaEntrega, double total, List<DetallesPedido> detalles) {
+    public Pedido(int idPedido, Integer idUsuario, EstadoPedido estado, String notasEntrega, LocalDateTime fecha, LocalDateTime fechaListo, LocalDateTime fechaEntrega, double total) {
         this.idPedido = idPedido;
-        this.estado = estado; 
+        this.idUsuario = idUsuario;
+        this.estado = estado;
         this.notasEntrega = notasEntrega;
         this.fecha = fecha;
+        this.fechaListo = fechaListo;
         this.fechaEntrega = fechaEntrega;
         this.total = total;
-        
-        this.detalles = detalles;
     }
-
-    public List<DetallesPedido> getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(List<DetallesPedido> detalles) {
-        this.detalles = detalles;
-    }
-    
-    
 
     public int getIdPedido() {
         return idPedido;
@@ -54,6 +43,14 @@ public class Pedido {
 
     public void setIdPedido(int idPedido) {
         this.idPedido = idPedido;
+    }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public EstadoPedido getEstado() {
@@ -80,6 +77,14 @@ public class Pedido {
         this.fecha = fecha;
     }
 
+    public LocalDateTime getFechaListo() {
+        return fechaListo;
+    }
+
+    public void setFechaListo(LocalDateTime fechaListo) {
+        this.fechaListo = fechaListo;
+    }
+
     public LocalDateTime getFechaEntrega() {
         return fechaEntrega;
     }
@@ -98,7 +103,11 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido{" + "idPedido=" + idPedido + ", estado=" + estado + ", notasEntrega=" + notasEntrega + ", fecha=" + fecha + ", fechaEntrega=" + fechaEntrega + ", total=" + total + '}';
+        return "Pedido{" + "idPedido=" + idPedido + ", idUsuario=" + idUsuario + ", estado=" + estado + ", notasEntrega=" + notasEntrega + ", fecha=" + fecha + ", fechaListo=" + fechaListo + ", fechaEntrega=" + fechaEntrega + ", total=" + total + '}';
+    }
+
+    public void setEstado(String pendiente) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     

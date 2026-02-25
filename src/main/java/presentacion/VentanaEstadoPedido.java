@@ -81,37 +81,31 @@ public class VentanaEstadoPedido extends JFrame{
 
         switch (estado) {
 
-            case PENDIENTE:
+            case pendiente:
                 lblEstado.setText("Pendient​e");
                 lblDescripcion.setText("Tu orden ha sido recibida.");
                 lblEstado.setForeground(Color.ORANGE);
                 break;
 
-            case EN_PREPARACION:
-                lblEstado.setText("En preparación");
-                lblDescripcion.setText("El cocinero está preparando tu pizza.");
-                lblEstado.setForeground(Color.BLUE);
-                break;
-
-            case LISTO:
+            case listo:
                 lblEstado.setText("Listo");
                 lblDescripcion.setText("Tu pedido está terminado.");
                 lblEstado.setForeground(new Color(0, 128, 0));
                 break;
 
-            case ENTREGADO:
+            case entregado:
                 lblEstado.setText("Entregado");
                 lblDescripcion.setText("El cliente recibió el pedido.");
                 lblEstado.setForeground(Color.GRAY);
                 break;
 
-            case CANCELADO:
+            case cancelado:
                 lblEstado.setText("Cancelado");
                 lblDescripcion.setText("El pedido fue cancelado.");
                 lblEstado.setForeground(Color.RED);
                 break;
 
-            case NO_RECLAMADO:
+            case no_reclamado:
                 lblEstado.setText("No reclamado");
                 lblDescripcion.setText("No se recogió en el tiempo establecido.");
                 lblEstado.setForeground(Color.yellow);
