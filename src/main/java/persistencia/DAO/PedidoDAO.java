@@ -11,10 +11,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import persistencia.Conexion.ConexionBD;
 import persistencia.dominio.DetallesPedido;
+import persistencia.dominio.EstadoPedido;
 import persistencia.dominio.Pedido;
 import persistencia.dominio.PedidoExpress;
 import persistencia.dominio.PedidoProgramado;
@@ -34,6 +37,122 @@ public class PedidoDAO implements IPedidoDAO {
 
     private static final Logger LOG = Logger.getLogger(PizzasDAO.class.getName());
 
+    @Override
+    public void actualizarEstado(int idPedido, String nuevoEstado) throws PersistenciaException {
+        // Preparamos el UPDATE apuntando exactamente al pedido que queremos
+        String sql = "UPDATE Pedidos SET estado = ? WHERE idPedido = ?";
+        
+        try (Connection conn = conexionBD.crearConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            // 1. El nuevo estado (ej. "listo")
+            ps.setString(1, nuevoEstado);
+            
+            // 2. El ID del pedido (ej. 42)
+            ps.setInt(2, idPedido);
+            
+            // Ejecutamos el cambio en la base de datos
+            ps.executeUpdate();
+            
+        } catch (SQLException ex) {
+            throw new PersistenciaException("Error al actualizar el estado del pedido en la BD", ex);
+        }
+    }
+    
+    @Override
+    public Pedido obtenerPedidoPorId(int idPedido) throws PersistenciaException{
+        //buscamos uun solo registro que coincida con el id
+        String sql = "SELECT idPedido, idUsuario, estado, fecha, total FROM Pedidos WHERE idPedido = ?";
+        
+        try(Connection conn = conexionBD.crearConexion();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            
+            ps.setInt(1, idPedido);
+            
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    Pedido pedido = new Pedido();
+                    pedido.setIdPedido(rs.getInt("idPedido"));
+                    
+                    //validamos nulos en el usuario
+                    int idUsuario = rs.getInt("idUsuario");
+                    if(!rs.wasNull()){
+                        pedido.setIdUsuario(idUsuario);
+                    }
+                    
+                    //transformamos el texto al num
+                    String estadoBD = rs.getString("estado");
+                    if(estadoBD != null){
+                        pedido.setEstado(EstadoPedido.valueOf(estadoBD.toLowerCase()));
+                    }
+                    
+                    //transformamos la fecha
+                    java.sql.Timestamp ts = rs.getTimestamp("fecha");
+                    if(ts != null){
+                        pedido.setFecha(ts.toLocalDateTime());
+                    }
+                    
+                    pedido.setTotal(rs.getDouble("total"));
+                    
+                    return pedido; //devolvemos la entidad
+                }
+            }
+            
+            return null; //si no existe ese id se devuelve nulo
+        }catch(SQLException ex){
+            throw new PersistenciaException("Error al buscar el pedido por ID en la base de datos", ex);
+        }
+    }
+    
+    @Override
+    public List<Pedido> obtenerPedidosOrdenadosPorFecha() throws PersistenciaException{
+        List<Pedido> listaPedidos = new ArrayList<>();
+        
+        //se ordena por fecha de manera descendente (usando la consulta del sql)
+        String sql = "SELECT idPedido, idUsuario, estado, fecha, total FROM Pedidos ORDER BY fecha DESC";
+        
+        try(Connection conn = conexionBD.crearConexion();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()){
+            
+            //el ciclo recorre cada fila que nos devuelve la base de datos con la consulta
+            while(rs.next()){
+                Pedido pedido = new Pedido();
+                pedido.setIdPedido(rs.getInt("idPedido"));
+                
+                //se extrae el idUsuario, validando si es nulo
+                int idUsuario = rs.getInt("idUsuario");
+                if(!rs.wasNull()){
+                    pedido.setIdUsuario(idUsuario);
+                }else{
+                    pedido.setIdUsuario(null);
+                }
+                
+                //set del estado y se pasa a mayusculas
+                String estadoBD = rs.getString("estado");
+                if(estadoBD != null){
+                    pedido.setEstado(EstadoPedido.valueOf(estadoBD.toLowerCase()));
+                }
+                
+                //para convertir el timestamp a localdate
+                java.sql.Timestamp timestampBD = rs.getTimestamp("fecha");
+                if (timestampBD != null) {
+                    pedido.setFecha(timestampBD.toLocalDateTime());
+                }
+                
+                pedido.setTotal(rs.getDouble("total"));
+                
+                listaPedidos.add(pedido);
+            }
+            
+            return listaPedidos;
+        }catch (SQLException ex){
+            throw new PersistenciaException("Error al consultar la lista de pedidos en la BD", ex);
+        }
+    }
+    
+    
+    
     @Override
     public int CrearPedido(Pedido pedido) throws PersistenciaException {
         String comandoSQL = """

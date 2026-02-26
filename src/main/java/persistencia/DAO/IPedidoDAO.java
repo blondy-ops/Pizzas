@@ -23,4 +23,12 @@ public interface IPedidoDAO {
     public void agregarPedidoProgramado(PedidoProgramado pedidoProgramado) throws PersistenciaException;
     public PedidoExpress obtenerExpressPorFolio(String folio)throws PersistenciaException;
     public int insertarPedido(Pedido pedido) throws PersistenciaException;
+    
+    //para la ventana de gestion pedidos usada por los empleados
+    List<Pedido> obtenerPedidosOrdenadosPorFecha() throws PersistenciaException;
+    
+    public void actualizarEstado(int idPedido, String nuevoEstado) throws PersistenciaException;
+    //--------------------
+    public Pedido obtenerPedidoPorId(int idPedido) throws PersistenciaException;
+    
 }

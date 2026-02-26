@@ -21,13 +21,17 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import negocio.BOs.ICarritoBO;
 import negocio.BOs.ICuponBO;
+import negocio.BOs.IPedidoBO;
 import negocio.BOs.IUsuarioBO;
+import negocio.BOs.PedidoBO;
 import negocio.BOs.UsuarioBO;
 import negocio.DTOs.CarritoDTO;
 import negocio.DTOs.CuponDTO;
+import negocio.DTOs.PedidoDTO;
 import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 import persistencia.Conexion.ConexionBD;
+import persistencia.DAO.PedidoDAO;
 import persistencia.dominio.Pedido;
 
 /**
@@ -35,10 +39,11 @@ import persistencia.dominio.Pedido;
  * @author Benjamin
  */
 public class VentanaRealizarPago extends JFrame {
-
+    
     //referencia actual al pedido que se esta procesando
     private ICarritoBO carritoBO;
     private IUsuarioBO usuario;
+    private IPedidoBO pedidoBO;
 
     //componentes que se usaran para la interfaz
     private JTable tablaResumen;
@@ -53,6 +58,7 @@ public class VentanaRealizarPago extends JFrame {
         ConexionBD conn = new ConexionBD();
         this.carritoBO = carritoBO;
         usuario=new UsuarioBO(conn);
+        this.pedidoBO = new PedidoBO(new PedidoDAO(conn));
 
         //definir tamaño y comportamiento al cerrarse
         setTitle("Realizar Pago");//titulo
@@ -146,8 +152,9 @@ public class VentanaRealizarPago extends JFrame {
                 UsuarioDTO us=UsuarioBO.obtenerUsuarioRegistrado();
                 System.out.println(us.getIdUsuario());
             }
-            Pedido p1 = new Pedido();
-            new VentanaEstadoPedido(p1);
+            PedidoDTO p1 = new PedidoDTO();
+            
+            new VentanaEstadoPedido(p1, pedidoBO);
             dispose();
         });
         panelBotonPagar.add(btnPagar);

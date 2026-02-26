@@ -33,6 +33,16 @@ public class PedidoDTO {
         this.total = total;
         this.notasEntrega = notasEntrega;
     }
+   
+    
+    //DTO para ventana de modificacion de estado de pedidos por empleados
+    public PedidoDTO(int idPedido, Integer idUsuario, String estado, LocalDateTime fecha, double total){
+        this.idPedido = idPedido;
+        this.idUsuario = idUsuario;
+        this.estado = estado;
+        this.fecha = fecha;
+        this.total = total;
+    }
 
     public int getIdPedido() {
         return idPedido;
@@ -71,4 +81,38 @@ public class PedidoDTO {
         return "PedidoDTO{" + "idPedido=" + idPedido + ", idUsuario=" + idUsuario + ", estado=" + estado + ", fecha=" + fecha + ", fechaListo=" + fechaListo + ", fechaEntrega=" + fechaEntrega + ", total=" + total + ", notasEntrega=" + notasEntrega + '}';
     }
 
+    public void setIdPedido(int idPedido) {
+        this.idPedido = idPedido;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
+    }
+
+    public void setFechaListo(LocalDateTime fechaListo) {
+        this.fechaListo = fechaListo;
+    }
+
+    public void setFechaEntrega(LocalDateTime fechaEntrega) {
+        this.fechaEntrega = fechaEntrega;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public void setNotasEntrega(String notasEntrega) {
+        this.notasEntrega = notasEntrega;
+    }
+
+    
+    
 }
