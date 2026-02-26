@@ -17,4 +17,7 @@ public interface IUsuarioBO {
     public UsuarioDTO iniciarSesion(String correo, String contrasena) throws NegocioException;
 
     public void registrarClienteCompleto(RegistroUsuarioDTO dto) throws NegocioException;
+        
+    public void actualizarClienteCompleto(RegistroUsuarioDTO dto) throws NegocioException;
+    
 }

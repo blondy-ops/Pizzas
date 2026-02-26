@@ -4,6 +4,8 @@
  */
 package persistencia.DAO;
 
+import java.util.List;
+import negocio.DTOs.TelefonoDTO;
 import persistencia.excepciones.PersistenciaException;
 
 /**
@@ -12,4 +14,8 @@ import persistencia.excepciones.PersistenciaException;
  */
 public interface ITelefonoClienteDAO {
     public void insertarTelefono(int idCliente, String telefono, String etiqueta) throws PersistenciaException;
+    
+    public void actualizarTelefono(int idTelefono, String telefono,String etiqueta) throws PersistenciaException;
+    
+    public List<TelefonoDTO> obtenerTelefonos(int idCliente) throws PersistenciaException;
 }
