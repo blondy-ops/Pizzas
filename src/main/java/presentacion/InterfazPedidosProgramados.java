@@ -181,7 +181,7 @@ public class InterfazPedidosProgramados extends JFrame {
         }
 
     }
-
+    
     public void agregegarCarrito(int idPizza, String nombrePizza, String tamano, double precioUnitario) {
         String cantidadStrin = JOptionPane.showInputDialog(this, "Cuantas pizzas desea agregar?");
 

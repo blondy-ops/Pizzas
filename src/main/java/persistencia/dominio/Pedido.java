@@ -36,6 +36,8 @@ public class Pedido {
         this.fechaEntrega = fechaEntrega;
         this.total = total;
     }
+    
+    
 
     public int getIdPedido() {
         return idPedido;

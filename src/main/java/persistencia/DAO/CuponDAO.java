@@ -27,43 +27,49 @@ public class CuponDAO implements ICuponDAO {
         this.conexionBD = conexionBD;
     }
 
-    /**
-     * Metodo para consultar si un codigo de cupon esta activo en la base de
-     * datso
-     *
-     * @param codigo
-     * @return
-     * @throws PersistenciaException
-     */
     @Override
-    public Cupon consultarCuponPorCodigo(String codigo) throws PersistenciaException {
+    public Cupon consultarCuponPorCodigo(String codigo)
+            throws PersistenciaException {
 
         String sql = "SELECT * FROM Cupones WHERE codigo = ?";
 
-        try (Connection conn = conexionBD.crearConexion(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = conexionBD.crearConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, codigo);
+
             try (ResultSet rs = ps.executeQuery()) {
+
                 if (rs.next()) {
+
                     Cupon cupon = new Cupon();
+
                     cupon.setIdCupon(rs.getInt("idCupon"));
                     cupon.setCodigo(rs.getString("codigo"));
                     cupon.setDescuento(rs.getDouble("descuento"));
-                    cupon.setFechaInicio(rs.getDate("fechaInicio").toLocalDate());
-                    Date fechaFinSql = rs.getDate("fechaFin"); 
-                    if (fechaFinSql != null) {
-                        cupon.setFechaFin(fechaFinSql.toLocalDate());
+
+                    Date fechaInicio = rs.getDate("fechaInicio");
+                    if (fechaInicio != null) {
+                        cupon.setFechaInicio(fechaInicio.toLocalDate());
                     }
+
+                    Date fechaFin = rs.getDate("fechaFin");
+                    if (fechaFin != null) {
+                        cupon.setFechaFin(fechaFin.toLocalDate());
+                    }
+
                     cupon.setUsosMaximos(rs.getInt("usosMaximos"));
                     cupon.setUsosActuales(rs.getInt("usos"));
+
                     return cupon;
-                } else {
-                    return null;
                 }
             }
-        } catch (SQLException ex) {
-            throw new PersistenciaException("Error al consultar el cupon de la BD", ex);
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "Error al consultar el cupón", e);
         }
     }
-
 }

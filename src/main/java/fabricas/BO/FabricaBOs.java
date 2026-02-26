@@ -7,6 +7,7 @@ package fabricas.BO;
 import fabricas.DAO.FabricaDAO;
 import negocio.BOs.CuponBO;
 import negocio.BOs.ICuponBO;
+import persistencia.Conexion.ConexionBD;
 import persistencia.DAO.CuponDAO;
 
 /**
@@ -14,6 +15,7 @@ import persistencia.DAO.CuponDAO;
  * @author Benjamin
  */
 public class FabricaBOs {
+
     /*
     //metodo para obtener un tecnico listo para trabajar
     public static TecnicoBO obtenerTecnicoBO(){
@@ -22,12 +24,10 @@ public class FabricaBOs {
         //regresamos el tecnico listo
         return tecnico;
     }
-*/
+     */
     //metodo para obtener la herramiento (BO) lista para trabajar
-    public static ICuponBO obtenerCuponBO(){
-        //creamos el BO y le inyectamos su dependencia (el DAO)
-        ICuponBO cuponBO = new CuponBO(FabricaDAO.obtenerCuponDAO());
-        //se regresa el BO listo
-        return cuponBO;
+    public static ICuponBO obtenerCuponBO() {
+        ConexionBD conn = new ConexionBD();
+        return new CuponBO(conn);
     }
 }

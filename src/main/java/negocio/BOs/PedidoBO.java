@@ -8,7 +8,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import negocio.DTOs.CarritoDTO;
@@ -40,6 +46,79 @@ public class PedidoBO implements IPedidoBO {
     }
 
     @Override
+    public PedidoDTO obtenerPedidoPorId(int idPedido) throws NegocioException {
+        try {
+            Pedido pedidoBD = pedidoDAO.obtenerPedidoPorId(idPedido);
+
+            if (pedidoBD == null) {
+                return null;
+            }
+
+            // Empaquetamos la información en el DTO
+            PedidoDTO dto = new PedidoDTO();
+            dto.setIdPedido(pedidoBD.getIdPedido());
+            dto.setIdUsuario(pedidoBD.getIdUsuario());
+
+            if (pedidoBD.getEstado() != null) {
+                dto.setEstado(pedidoBD.getEstado().name()); // Lo convertimos a String
+            }
+
+            dto.setFecha(pedidoBD.getFecha());
+            dto.setTotal(pedidoBD.getTotal());
+
+            return dto;
+
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("Error al consultar la información del pedido.", ex);
+        }
+    }
+
+    @Override
+    public void actualizarEstado(int idPedido, String nuevoEstado) throws NegocioException {
+        try {
+            // Le pedimos al DAO que haga el UPDATE
+            pedidoDAO.actualizarEstado(idPedido, nuevoEstado);
+        } catch (PersistenciaException ex) {
+            throw new NegocioException("No se pudo actualizar el estado del pedido en el sistema.", ex);
+        }
+    }
+
+    @Override
+    public List<PedidoDTO> obtenerPedidosOrdenadosPorFecha() throws NegocioException {
+        try {
+            //1. se pide las entidades puras al DAO
+            List<Pedido> pedidosBD = pedidoDAO.obtenerPedidosOrdenadosPorFecha();
+
+            //2. se prepara la lista de mensajeros (DTOs)
+            List<PedidoDTO> pedidosDTO = new ArrayList<>();
+
+            //3. transformamos cada pedido en un dto 
+            for (Pedido p : pedidosBD) {
+                PedidoDTO dto = new PedidoDTO();
+
+                dto.setIdPedido(p.getIdPedido());
+                dto.setIdUsuario(p.getIdUsuario());
+
+                if (p.getEstado() != null) {
+                    dto.setEstado(p.getEstado().name());
+                }
+
+                dto.setFecha(p.getFecha());
+                dto.setTotal(p.getTotal());
+
+                //se agrega el dto a la lista
+                pedidosDTO.add(dto);
+            }
+
+            //4. se devuelve la lista limpia a la ventana para que la muestre
+            return pedidosDTO;
+        } catch (PersistenciaException ex) {
+            //si la base de datos falla, se lanza la e
+            throw new NegocioException("No se pudieron recuperar los pedidos", ex);
+        }
+    }
+
+    @Override
     public int crearPedido(PedidoCompletoDTO pedidoCompleto) throws NegocioException {
         if (pedidoCompleto == null) {
             throw new NegocioException("Error: El pedido esta vacio");
@@ -51,7 +130,7 @@ public class PedidoBO implements IPedidoBO {
 
         PedidoDTO pedidoDTO = pedidoCompleto.getPedido();
         String notaGeneral = pedidoDTO.getNotasEntrega();
-                
+
         try {
             if (pedidoDTO.getIdUsuario() != null) {
                 int pedidosActivos = pedidoDAO.contarPedidosActivosPorCliente(pedidoDTO.getIdUsuario());
@@ -61,7 +140,7 @@ public class PedidoBO implements IPedidoBO {
                             "Error: Tiene 3 pedidos activos");
                 }
             }
-            
+
             Pedido pedido = new Pedido();
             pedido.setIdUsuario(pedidoDTO.getIdUsuario());
             pedido.setEstado(EstadoPedido.pendiente);

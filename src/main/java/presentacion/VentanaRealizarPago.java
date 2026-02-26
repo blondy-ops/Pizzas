@@ -34,8 +34,7 @@ import negocio.DTOs.PedidoExpressDTO;
 import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 import persistencia.Conexion.ConexionBD;
-import persistencia.DAO.CuponDAO;
-import persistencia.DAO.ICuponDAO;
+import persistencia.DAO.PedidoDAO;
 import persistencia.dominio.Pedido;
 
 /**
@@ -44,13 +43,12 @@ import persistencia.dominio.Pedido;
  */
 public class VentanaRealizarPago extends JFrame {
 
-    //referencia actual al pedido que se esta procesando
     private ICarritoBO carritoBO;
     private IUsuarioBO usuario;
     private IPedidoBO pedido;
     private ICuponBO cuponBO;
 
-    //componentes que se usaran para la interfaz
+    // ===== COMPONENTES =====
     private JTable tablaResumen;
     private JTextField txtCupon;
     private JLabel lblTotalMonto;
@@ -66,8 +64,10 @@ public class VentanaRealizarPago extends JFrame {
         ConexionBD conn = new ConexionBD();
 
         this.carritoBO = carritoBO;
+
         usuario = new UsuarioBO(conn);
         pedido = new PedidoBO(conn);
+        cuponBO = new CuponBO(conn);
 
         //definir tamaño y comportamiento al cerrarse
         setTitle("Realizar Pago");//titulo
@@ -83,59 +83,28 @@ public class VentanaRealizarPago extends JFrame {
     }
 
     private void iniciarComponentes() {
-        //se pone el layout principal de la ventana para acomodarla
-        setLayout(new BorderLayout());
 
         tablaResumen = new JTable();
-        JScrollPane scrollPane = new JScrollPane(tablaResumen);
-        add(scrollPane, BorderLayout.CENTER);
+        add(new JScrollPane(tablaResumen), BorderLayout.CENTER);
 
-        // ZONA SUR
         JPanel panelInferior = new JPanel();
         panelInferior.setLayout(new BoxLayout(panelInferior, BoxLayout.Y_AXIS));
 
-        //Fila 1: Cupon (Usamos flowlayout que acomoda de izquierda a derecha por defecto
         JPanel panelOpciones = new JPanel();
         panelOpciones.add(new JLabel("Codigo de cupon:"));
-        txtCupon = new JTextField(10); //campo de texto de 10 columnas de ancho
+
+        txtCupon = new JTextField(10);
         panelOpciones.add(txtCupon);
 
-        //BOTON CUPON-------------------------------------------------------------------------
         JButton btnAplicarCupon = new JButton("Aplicar");
-
-        //agregamos el evento del boton cupon
-        btnAplicarCupon.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aplicarCuponAction(); // Llamamos a un método separado para tenerlo ordenado
-            }
-        });
+        btnAplicarCupon.addActionListener(e -> aplicarCuponAction());
         panelOpciones.add(btnAplicarCupon);
 
-        // NUEVO BOTON NOTA GENERAL---------------------------------
-        JButton btnNotaGeneral = new JButton("Agregar Nota General");
-        btnNotaGeneral.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                agregarNotaGeneralAction();
-            }
-        });
-        panelOpciones.add(btnNotaGeneral);
+        panelInferior.add(panelOpciones);
 
-        // NUEVO BOTON NOTA INDIVIDUAL -------------------------------
-        JButton btnNotaIndividual = new JButton("Agregar Nota a Pizza");
-        btnNotaIndividual.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                agregarNotaIndividualAction();
-            }
-        });
-        panelOpciones.add(btnNotaIndividual);
-
-        // FIla 2 total----------------------------------------
         JPanel panelTotal = new JPanel();
-        //se hace la fuente del total mas grande y en negrita para que resalte
         Font fuenteTotal = new Font("Arial", Font.BOLD, 18);
+
         JLabel lblTextoTotal = new JLabel("Total a pagar: $");
         lblTextoTotal.setFont(fuenteTotal);
 
@@ -145,58 +114,51 @@ public class VentanaRealizarPago extends JFrame {
         panelTotal.add(lblTextoTotal);
         panelTotal.add(lblTotalMonto);
 
-        //Fila 3 Boton de pagar
-        JPanel panelBotonPagar = new JPanel();
+        panelInferior.add(panelTotal);
+
+        JPanel panelBoton = new JPanel();
+
         btnPagar = new JButton("PAGAR ORDEN");
         btnPagar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnPagar.setBackground(new Color(34, 139, 34)); // Color verde oscuro
-        btnPagar.setForeground(Color.WHITE); // Texto blanco
+        btnPagar.setBackground(new Color(34, 139, 34));
+        btnPagar.setForeground(Color.WHITE);
 
-        btnPagar.addActionListener(e -> {
-            try {
+        btnPagar.addActionListener(e -> procesarPago());
 
-                UsuarioDTO usDTO = UsuarioBO.obtenerUsuarioRegistrado();
+        panelBoton.add(btnPagar);
+        panelInferior.add(panelBoton);
 
-                String notasEntre = carritoBO.getNotaGeneral();
-                double total = carritoBO.calcularTotal();
-                List<CarritoDTO> carrito = carritoBO.obtenerCarrito();
-                Integer idCuponAplicado = null;
-
-                String codigoCupon = txtCupon.getText().trim();
-                if (!codigoCupon.isEmpty()) {
-                    CuponDTO cupon = cuponBO.validarYObtenerCupon(codigoCupon);
-                    idCuponAplicado = cupon.getIdcupon();
-                }
-
-                if (usDTO != null) {
-                    PedidoDTO pedidoDTO = new PedidoDTO(usDTO.getIdUsuario(), total, notasEntre);
-                    PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
-                    pedido.CrearPedidoProgramado(pedidoCompleto);
-                    Pedido p1 = new Pedido();
-                    new VentanaEstadoPedido(p1);
-                    dispose();
-                } else {
-                    PedidoDTO pedidoDTO = new PedidoDTO(null, total, notasEntre);
-                    PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
-                    PedidoExpressDTO expressDTO = pedido.crearPedidoExpress(pedidoCompleto);
-                    new FrameDatosExpress(expressDTO);
-                    dispose();
-                }
-
-            } catch (NegocioException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage());
-            }
-        });
-        panelBotonPagar.add(btnPagar);
-
-        //se aplica las 3 filas en el panel inferior
-        panelInferior.add(panelOpciones);
-        panelInferior.add(panelTotal);
-        panelInferior.add(panelBotonPagar);
-
-        //agregamos el panel inferior al sur de la ventana
         add(panelInferior, BorderLayout.SOUTH);
+    }
 
+    private void procesarPago() {
+
+        try {
+            UsuarioDTO usDTO = UsuarioBO.obtenerUsuarioRegistrado();
+            String notasEntre = carritoBO.getNotaGeneral();
+            double total = carritoBO.calcularTotal();
+            List<CarritoDTO> carrito = carritoBO.obtenerCarrito();
+
+            if (usDTO != null) {
+                PedidoDTO pedidoDTO= new PedidoDTO(usDTO.getIdUsuario(), total, notasEntre);
+                PedidoCompletoDTO pedidoCompleto= new PedidoCompletoDTO(pedidoDTO, carrito, idCupon);
+                pedido.CrearPedidoProgramado(pedidoCompleto);
+                JOptionPane.showMessageDialog(this,"Pedido programado creado correctamente");
+                new VentanaEstadoPedido(pedidoDTO, pedido);
+                dispose();
+
+            } else {
+                PedidoDTO pedidoDTO= new PedidoDTO(null, total, notasEntre);
+                PedidoCompletoDTO pedidoCompleto= new PedidoCompletoDTO(pedidoDTO, carrito, null);
+                PedidoExpressDTO expressDTO= pedido.crearPedidoExpress(pedidoCompleto);
+                JOptionPane.showMessageDialog(this,"Pedido express creado correctamente");
+                new FrameDatosExpress(expressDTO);
+                dispose();
+            }
+
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage());
+        }
     }
 
     public void agregarNotaIndividualAction() {
