@@ -21,6 +21,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,8 +32,10 @@ import negocio.BOs.CarritoBO;
 import negocio.BOs.ICarritoBO;
 import negocio.BOs.IPizzasBO;
 import negocio.BOs.PizzasBO;
+import negocio.BOs.UsuarioBO;
 import negocio.DTOs.CarritoDTO;
 import negocio.DTOs.PizzaDTO;
+import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 import persistencia.Conexion.ConexionBD;
 import persistencia.DAO.IPizzaDAO;
@@ -61,6 +66,7 @@ public class InterfazPedidosProgramados extends JFrame {
         setSize(950, 650);
         setLayout(new BorderLayout());
         interfazFrame();
+        configurarMenuSuperior();
         setVisible(true);
 
     }
@@ -152,9 +158,10 @@ public class InterfazPedidosProgramados extends JFrame {
         btnPagar.addActionListener(e -> {
             VentanaRealizarPago ventana = new VentanaRealizarPago(carritoBO);
             ventana.setVisible(true);
+            dispose();
         });
 
-        //ocupo un bo y dto 
+        //ocupo un bo y dto
         List<PizzaDTO> pizzas = new ArrayList<>();
         try {
             pizzas = pizzasBO.obtenerPizzasDisponibles();
@@ -172,6 +179,7 @@ public class InterfazPedidosProgramados extends JFrame {
                     rutaImg
             ));
         }
+        
     }
 
     public void agregegarCarrito(int idPizza, String nombrePizza, String tamano, double precioUnitario) {
@@ -196,7 +204,7 @@ public class InterfazPedidosProgramados extends JFrame {
         double subtotal = precioUnitario * cantidad;
         double total = 0;
 
-        CarritoDTO carritoDTO = new CarritoDTO(idPizza,nombrePizza,tamano,cantidad,precioUnitario,subtotal);
+        CarritoDTO carritoDTO = new CarritoDTO(idPizza, nombrePizza, tamano, cantidad, precioUnitario, subtotal);
         System.out.println("ID PIZZA GUARDADO: " + carritoDTO.getIdPizza());
         try {
             carritoBO.agregarCarrito(carritoDTO);
@@ -317,4 +325,45 @@ public class InterfazPedidosProgramados extends JFrame {
         });
         return panel;
     }
+
+    private void configurarMenuSuperior() {
+
+        JMenuBar menuBar = new JMenuBar();
+
+        // Espaciador para empujar el menú a la derecha
+        menuBar.add(Box.createHorizontalGlue());
+
+        JMenu menuUsuario = new JMenu("Cuenta");
+
+        JMenuItem itemEditar = new JMenuItem("Editar Perfil");
+        JMenuItem itemCerrar = new JMenuItem("Cerrar Sesión");
+
+        itemEditar.addActionListener(e -> {
+            //new ActualizarDatosFrame();
+        });
+
+        itemCerrar.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Seguro que deseas cerrar sesión?",
+                    "Confirmar",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                UsuarioBO.cerrarSesion(); 
+                new InicioFrame();
+                dispose();
+            }
+        });
+
+        menuUsuario.add(itemEditar);
+        menuUsuario.addSeparator();
+        menuUsuario.add(itemCerrar);
+
+        menuBar.add(menuUsuario);
+
+        setJMenuBar(menuBar);
+    }
+
 }

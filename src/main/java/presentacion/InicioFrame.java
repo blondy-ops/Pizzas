@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import negocio.BOs.UsuarioBO;
+import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 
 /**
@@ -37,7 +39,7 @@ public class InicioFrame extends JFrame{
 
         JButton btnPedido = new JButton("Pedido express");
         JButton btnLogin = new JButton("Iniciar sesión");
-
+        
         estilizarBoton(btnPedido);
         estilizarBoton(btnLogin);
 

@@ -30,6 +30,7 @@ import negocio.DTOs.CarritoDTO;
 import negocio.DTOs.CuponDTO;
 import negocio.DTOs.PedidoCompletoDTO;
 import negocio.DTOs.PedidoDTO;
+import negocio.DTOs.PedidoExpressDTO;
 import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 import persistencia.Conexion.ConexionBD;
@@ -65,7 +66,7 @@ public class VentanaRealizarPago extends JFrame {
         ConexionBD conn = new ConexionBD();
 
         this.carritoBO = carritoBO;
-        usuario = new UsuarioBO(conn); 
+        usuario = new UsuarioBO(conn);
         pedido = new PedidoBO(conn);
 
         //definir tamaño y comportamiento al cerrarse
@@ -171,18 +172,16 @@ public class VentanaRealizarPago extends JFrame {
                     PedidoDTO pedidoDTO = new PedidoDTO(usDTO.getIdUsuario(), total, notasEntre);
                     PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
                     pedido.CrearPedidoProgramado(pedidoCompleto);
-                    JOptionPane.showMessageDialog(this, "Pedido programado creado correctamente");
+                    Pedido p1 = new Pedido();
+                    new VentanaEstadoPedido(p1);
+                    dispose();
                 } else {
                     PedidoDTO pedidoDTO = new PedidoDTO(null, total, notasEntre);
                     PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
-                    pedido.crearPedidoExpress(pedidoCompleto);
-                    JOptionPane.showMessageDialog(this, "Pedido express creado correctamente");
+                    PedidoExpressDTO expressDTO = pedido.crearPedidoExpress(pedidoCompleto);
+                    new FrameDatosExpress(expressDTO);
+                    dispose();
                 }
-                JOptionPane.showMessageDialog(this, "Pedido registrado correctamente");
-
-                Pedido p1 = new Pedido();
-                new VentanaEstadoPedido(p1);
-                dispose();
 
             } catch (NegocioException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage());

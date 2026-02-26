@@ -25,16 +25,16 @@ import persistencia.excepciones.PersistenciaException;
  *
  * @author munos
  */
-public class UsuarioBO implements IUsuarioBO{
+public class UsuarioBO implements IUsuarioBO {
 
     private UsuarioDAO dao;
 
     public UsuarioBO(ConexionBD conexion) {
         this.dao = new UsuarioDAO(conexion);
     }
-    
+
     private static UsuarioDTO usuarioActual;
-    
+
     @Override
     public UsuarioDTO iniciarSesion(String correo, String contrasena) throws NegocioException {
 
@@ -53,18 +53,18 @@ public class UsuarioBO implements IUsuarioBO{
             if (usuario == null) {
                 return null;
             }
-            
-            UsuarioDTO dto=new UsuarioDTO(usuario.getIdUsuario(), usuario.getCorreo(), usuario.getTipoUsuario());
-            
-            usuarioActual=dto;
-            
+
+            UsuarioDTO dto = new UsuarioDTO(usuario.getIdUsuario(), usuario.getCorreo(), usuario.getTipoUsuario());
+
+            usuarioActual = dto;
+
             return dto;
-            
+
         } catch (PersistenciaException e) {
             throw new NegocioException("Error al iniciar sesión", e);
         }
     }
-    
+
     @Override
     public void registrarClienteCompleto(RegistroUsuarioDTO dto) throws NegocioException {
 
@@ -120,11 +120,12 @@ public class UsuarioBO implements IUsuarioBO{
         }
     }
 
-    
+    public static void cerrarSesion() {
+        usuarioActual = null;
+    }
+
     public static UsuarioDTO obtenerUsuarioRegistrado() {
         return usuarioActual;
     }
-    
-    
-    
+
 }
