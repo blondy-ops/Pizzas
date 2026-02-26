@@ -24,7 +24,7 @@ public interface ICarritoBO {
     //firmas para los botones de notas en la ventana realizar pago
     public void setNotaGeneral(String nota) throws NegocioException;
     
-    public String getNotaGeneral() throws NegocioException;
+    public String getNotaGeneral();
     
     //fimas para el idCuponAplicado
     public void setIdCuponAplicado(Integer idCupon);

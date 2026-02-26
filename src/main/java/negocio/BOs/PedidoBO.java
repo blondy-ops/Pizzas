@@ -21,6 +21,7 @@ import persistencia.DAO.IPedidoDAO;
 import persistencia.DAO.PedidoDAO;
 import persistencia.DAO.UsuarioDAO;
 import persistencia.dominio.DetallesPedido;
+import persistencia.dominio.EstadoPedido;
 import persistencia.dominio.Pedido;
 import persistencia.dominio.PedidoExpress;
 import persistencia.dominio.PedidoProgramado;
@@ -49,7 +50,8 @@ public class PedidoBO implements IPedidoBO {
         }
 
         PedidoDTO pedidoDTO = pedidoCompleto.getPedido();
-
+        String notaGeneral = pedidoDTO.getNotasEntrega();
+                
         try {
             if (pedidoDTO.getIdUsuario() != null) {
                 int pedidosActivos = pedidoDAO.contarPedidosActivosPorCliente(pedidoDTO.getIdUsuario());
@@ -59,12 +61,12 @@ public class PedidoBO implements IPedidoBO {
                             "Error: Tiene 3 pedidos activos");
                 }
             }
-
+            
             Pedido pedido = new Pedido();
             pedido.setIdUsuario(pedidoDTO.getIdUsuario());
-            pedido.setEstado("pendiente");
+            pedido.setEstado(EstadoPedido.pendiente);
             pedido.setFecha(LocalDateTime.now());
-            pedido.setNotasEntrega(pedidoDTO.getNotasEntrega());
+            pedido.setNotasEntrega(notaGeneral);
             pedido.setTotal(pedidoDTO.getTotal());
 
             int idGenerado = pedidoDAO.CrearPedido(pedido);
@@ -74,7 +76,7 @@ public class PedidoBO implements IPedidoBO {
                 detalle.setIdPedido(idGenerado);
                 detalle.setIdPizza(x.getIdPizza());
                 detalle.setCantidad(x.getCantidad());
-                //detalle.setNotasPreparacion(x.getNotas());
+                detalle.setNotasPreparacion(x.getNotaIndividual());
                 detalle.setPrecioUnitario(x.getPrecioUnitario());
                 pedidoDAO.agregarDetallePedido(detalle);
             }

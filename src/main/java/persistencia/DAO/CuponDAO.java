@@ -19,59 +19,51 @@ import persistencia.excepciones.PersistenciaException;
  *
  * @author Benjamin
  */
-public class CuponDAO implements ICuponDAO{
-    
+public class CuponDAO implements ICuponDAO {
+
     private final IConexionBD conexionBD;
-    
-    public CuponDAO(IConexionBD conexionBD){
+
+    public CuponDAO(IConexionBD conexionBD) {
         this.conexionBD = conexionBD;
     }
-    
+
     /**
-     * Metodo para consultar si un codigo de cupon esta activo en la base de datso
+     * Metodo para consultar si un codigo de cupon esta activo en la base de
+     * datso
+     *
      * @param codigo
      * @return
-     * @throws PersistenciaException 
+     * @throws PersistenciaException
      */
     @Override
     public Cupon consultarCuponPorCodigo(String codigo) throws PersistenciaException {
-        //se crea la consulta del sql
-        String sql = "SELECT * FROM Cupones WHERE codigo = ?"; 
-        
-        try(Connection conn = conexionBD.crearConexion();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-            
-            //reemplazar el signo de interrogacion con el codigo en string
+
+        String sql = "SELECT * FROM Cupones WHERE codigo = ?";
+
+        try (Connection conn = conexionBD.crearConexion(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, codigo);
-            
-            //ejecuta la linea de la consulta
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
-                    Cupon cupon = new Cupon(); //crea objeto tipo cupon
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Cupon cupon = new Cupon();
                     cupon.setIdCupon(rs.getInt("idCupon"));
-                    cupon.setCodigo("codigo");
+                    cupon.setCodigo(rs.getString("codigo"));
                     cupon.setDescuento(rs.getDouble("descuento"));
-                    
-                    //manejo de fechas de SQL a LocalDate de java
                     cupon.setFechaInicio(rs.getDate("fechaInicio").toLocalDate());
-                    
-                    //la fecha fin puede ser NULA en tu base de datos
-                    Date fechaFinSql = rs.getDate("fechaFIN");
-                    if(fechaFinSql != null){ //valida si esta vacia
-                        cupon.setFechaFin(fechaFinSql.toLocalDate()); //se cambai a formato sin hora (solo dia mes y año)
+                    Date fechaFinSql = rs.getDate("fechaFin"); 
+                    if (fechaFinSql != null) {
+                        cupon.setFechaFin(fechaFinSql.toLocalDate());
                     }
-                    
-                    cupon.setUsosMaximos(rs.getInt("usosMaximos")); //saca del resultado de la consulta de la base de datos cada dato y lo pone en el objeto cupon que se creo como copia
+                    cupon.setUsosMaximos(rs.getInt("usosMaximos"));
                     cupon.setUsosActuales(rs.getInt("usos"));
-                    
-                    return cupon; //se devuelve el cupon encontrado en la base de datos
+                    return cupon;
                 } else {
-                    return null; // cuando no se encontro el cupon 
+                    return null;
                 }
             }
-        } catch (SQLException ex){
-            throw new PersistenciaException("Error al consultar el cupon de la BD"); //cuando da la excepcion de la conexion a la bd
+        } catch (SQLException ex) {
+            throw new PersistenciaException("Error al consultar el cupon de la BD", ex);
         }
     }
-    
+
 }

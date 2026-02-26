@@ -16,31 +16,31 @@ import negocio.excepciones.NegocioException;
 public class CarritoBO implements ICarritoBO {
 
     private Integer idCuponAplicado = null; //empieza nulo
-    
+
     private List<CarritoDTO> ListaCarrito = new ArrayList<>();
 
     private String notaGeneral = ""; //se agregar para las notas
-    
+
     @Override
-    public void setIdCuponAplicado(Integer idCupon){
+    public void setIdCuponAplicado(Integer idCupon) {
         this.idCuponAplicado = idCupon;
     }
-    
+
     @Override
-    public Integer getIdCuponAplicado(){
+    public Integer getIdCuponAplicado() {
         return this.idCuponAplicado;
     }
-    
+
     @Override
     public void setNotaGeneral(String nota) throws NegocioException {
         this.notaGeneral = nota;
     }
-    
+
     @Override
-    public String getNotaGeneral() throws NegocioException {
+    public String getNotaGeneral() {
         return this.notaGeneral;
     }
-    
+
     @Override
     public void agregarCarrito(CarritoDTO carrito) throws NegocioException {
         ListaCarrito.add(carrito);
@@ -57,14 +57,12 @@ public class CarritoBO implements ICarritoBO {
 
     @Override
     public List<CarritoDTO> obtenerCarrito() throws NegocioException {
-            return this.ListaCarrito;
+        return this.ListaCarrito;
     }
 
     @Override
     public void eliminarProduco(CarritoDTO carrito) throws NegocioException {
         ListaCarrito.remove(carrito);
     }
-    
-    
 
 }

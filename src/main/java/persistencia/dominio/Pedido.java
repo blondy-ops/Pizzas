@@ -105,10 +105,5 @@ public class Pedido {
     public String toString() {
         return "Pedido{" + "idPedido=" + idPedido + ", idUsuario=" + idUsuario + ", estado=" + estado + ", notasEntrega=" + notasEntrega + ", fecha=" + fecha + ", fechaListo=" + fechaListo + ", fechaEntrega=" + fechaEntrega + ", total=" + total + '}';
     }
-
-    public void setEstado(String pendiente) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
     
 }

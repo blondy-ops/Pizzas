@@ -19,15 +19,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import negocio.BOs.CuponBO;
 import negocio.BOs.ICarritoBO;
 import negocio.BOs.ICuponBO;
+import negocio.BOs.IPedidoBO;
 import negocio.BOs.IUsuarioBO;
+import negocio.BOs.PedidoBO;
 import negocio.BOs.UsuarioBO;
 import negocio.DTOs.CarritoDTO;
 import negocio.DTOs.CuponDTO;
+import negocio.DTOs.PedidoCompletoDTO;
+import negocio.DTOs.PedidoDTO;
 import negocio.DTOs.UsuarioDTO;
 import negocio.excepciones.NegocioException;
 import persistencia.Conexion.ConexionBD;
+import persistencia.DAO.CuponDAO;
+import persistencia.DAO.ICuponDAO;
 import persistencia.dominio.Pedido;
 
 /**
@@ -39,6 +46,8 @@ public class VentanaRealizarPago extends JFrame {
     //referencia actual al pedido que se esta procesando
     private ICarritoBO carritoBO;
     private IUsuarioBO usuario;
+    private IPedidoBO pedido;
+    private ICuponBO cuponBO;
 
     //componentes que se usaran para la interfaz
     private JTable tablaResumen;
@@ -46,13 +55,18 @@ public class VentanaRealizarPago extends JFrame {
     private JLabel lblTotalMonto;
     private JButton btnPagar;
 
+    //variables 
+    private Integer idCupon = null;
+
     /**
      * Creates new form VentanaRealizarPago
      */
     public VentanaRealizarPago(ICarritoBO carritoBO) {
         ConexionBD conn = new ConexionBD();
+
         this.carritoBO = carritoBO;
-        usuario=new UsuarioBO(conn);
+        usuario = new UsuarioBO(conn); 
+        pedido = new PedidoBO(conn);
 
         //definir tamaño y comportamiento al cerrarse
         setTitle("Realizar Pago");//titulo
@@ -101,22 +115,22 @@ public class VentanaRealizarPago extends JFrame {
         JButton btnNotaGeneral = new JButton("Agregar Nota General");
         btnNotaGeneral.addActionListener(new java.awt.event.ActionListener() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt){
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 agregarNotaGeneralAction();
             }
         });
         panelOpciones.add(btnNotaGeneral);
-        
+
         // NUEVO BOTON NOTA INDIVIDUAL -------------------------------
         JButton btnNotaIndividual = new JButton("Agregar Nota a Pizza");
         btnNotaIndividual.addActionListener(new java.awt.event.ActionListener() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt){
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 agregarNotaIndividualAction();
             }
         });
         panelOpciones.add(btnNotaIndividual);
-        
+
         // FIla 2 total----------------------------------------
         JPanel panelTotal = new JPanel();
         //se hace la fuente del total mas grande y en negrita para que resalte
@@ -138,17 +152,41 @@ public class VentanaRealizarPago extends JFrame {
         btnPagar.setForeground(Color.WHITE); // Texto blanco
 
         btnPagar.addActionListener(e -> {
-            UsuarioDTO usDTO=UsuarioBO.obtenerUsuarioRegistrado();
-            if (usDTO == null) {
-                System.out.println("Pedido expres");
-            } else {
-                System.out.println("Es pedido programado");
-                UsuarioDTO us=UsuarioBO.obtenerUsuarioRegistrado();
-                System.out.println(us.getIdUsuario());
+            try {
+
+                UsuarioDTO usDTO = UsuarioBO.obtenerUsuarioRegistrado();
+
+                String notasEntre = carritoBO.getNotaGeneral();
+                double total = carritoBO.calcularTotal();
+                List<CarritoDTO> carrito = carritoBO.obtenerCarrito();
+                Integer idCuponAplicado = null;
+
+                String codigoCupon = txtCupon.getText().trim();
+                if (!codigoCupon.isEmpty()) {
+                    CuponDTO cupon = cuponBO.validarYObtenerCupon(codigoCupon);
+                    idCuponAplicado = cupon.getIdcupon();
+                }
+
+                if (usDTO != null) {
+                    PedidoDTO pedidoDTO = new PedidoDTO(usDTO.getIdUsuario(), total, notasEntre);
+                    PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
+                    pedido.CrearPedidoProgramado(pedidoCompleto);
+                    JOptionPane.showMessageDialog(this, "Pedido programado creado correctamente");
+                } else {
+                    PedidoDTO pedidoDTO = new PedidoDTO(null, total, notasEntre);
+                    PedidoCompletoDTO pedidoCompleto = new PedidoCompletoDTO(pedidoDTO, carrito, idCuponAplicado);
+                    pedido.crearPedidoExpress(pedidoCompleto);
+                    JOptionPane.showMessageDialog(this, "Pedido express creado correctamente");
+                }
+                JOptionPane.showMessageDialog(this, "Pedido registrado correctamente");
+
+                Pedido p1 = new Pedido();
+                new VentanaEstadoPedido(p1);
+                dispose();
+
+            } catch (NegocioException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
             }
-            Pedido p1 = new Pedido();
-            new VentanaEstadoPedido(p1);
-            dispose();
         });
         panelBotonPagar.add(btnPagar);
 
@@ -162,50 +200,49 @@ public class VentanaRealizarPago extends JFrame {
 
     }
 
-    public void agregarNotaIndividualAction(){
+    public void agregarNotaIndividualAction() {
         // obtenemos el numero de la fila que el usuario selecciono con el cursor utilizando el metodo getSelectedRow() de las JTable
         int filaSeleccionada = tablaResumen.getSelectedRow();
-        
+
         //validacion si no a selecciionado nada
-        if(filaSeleccionada == -1){
+        if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this,
                     "Por favor seleccione la fila de la pizza a la que desea agregar una nota individual dandole click con el cursor",
                     "Atencion",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        try{
+
+        try {
             //1. obtenemos la lista de DTOs
             List<CarritoDTO> pizzas = carritoBO.obtenerCarrito();
-            
+
             //2. extraemos la pizza exacta que el usuario selecciono 
             CarritoDTO pizzaSeleccionada = pizzas.get(filaSeleccionada);
-            
+
             //3. mostramos el pop-up
             String nota = JOptionPane.showInputDialog(this,
                     "Escribe la nota especial para: " + pizzaSeleccionada.getNombre(),
                     "Nota Individual",
                     JOptionPane.PLAIN_MESSAGE);
-            
+
             //4. si escribio algo, lo guardamos en el DTO
-            if(nota != null && !nota.trim().isEmpty()){
+            if (nota != null && !nota.trim().isEmpty()) {
                 pizzaSeleccionada.setNotaIndividual(nota.trim());
                 JOptionPane.showMessageDialog(this, "Nota guardada para esta pizza");
             }
-        } catch(NegocioException ex){
+        } catch (NegocioException ex) {
             JOptionPane.showMessageDialog(this, "Error al leer el carrito: " + ex.getMessage());
         }
     }
-    
-    
+
     public void agregarNotaGeneralAction() {
         //1. se muestra el pop-up para que el usuario escriba
         String nota = JOptionPane.showInputDialog(this,
                 "Escribe la nota general para la entrga del pedido:",
                 "Nota General",
                 JOptionPane.PLAIN_MESSAGE);
-        
+
         //2. se valida que el usuario no haya cancelado y que haya escrito algo
         if (nota != null && !nota.trim().isEmpty()) {
             try {
@@ -223,8 +260,7 @@ public class VentanaRealizarPago extends JFrame {
             }
         }
     }
-    
-    
+
     private void aplicarCuponAction() {
         // 1. Extraemos el texto y le quitamos espacios en blanco extra
         String codigoIngresado = txtCupon.getText().trim();
@@ -237,11 +273,13 @@ public class VentanaRealizarPago extends JFrame {
 
         try {
             //1. Llamamos al cerebro (BO)
-            ICuponBO cuponBO = FabricaBOs.obtenerCuponBO(); //PONERLO BIEN EN LA FABRICA PARA QUE SIRVA
+            //PONERLO BIEN EN LA FABRICA PARA QUE SIRVA
 
             //si el cupon es malo tira la excepcion el BO y la cacha el catch
             //si el cupon es bueno nos regresa el DTO con el descuento
             CuponDTO cuponValido = cuponBO.validarYObtenerCupon(codigoIngresado);
+
+            idCupon = cuponValido.getIdcupon();
 
             //2. Calculamos el descuento 
             double descuentoPorcentaje = cuponValido.getDescuento() / 100.0;

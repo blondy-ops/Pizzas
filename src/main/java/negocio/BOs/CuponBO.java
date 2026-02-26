@@ -57,7 +57,7 @@ public class CuponBO implements ICuponBO{
             }
             
             // SI LLEGA AQUI DESPUES DE LAS VALIDACIONES QUIERE DECIR QUE ES VALIDO
-            return new CuponDTO(cupon.getCodigo(), cupon.getDescuento());
+            return new CuponDTO(cupon.getIdCupon(),cupon.getCodigo(), cupon.getDescuento());
             
             
         }catch (PersistenciaException ex){

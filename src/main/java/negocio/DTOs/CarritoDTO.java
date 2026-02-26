@@ -18,7 +18,7 @@ public class CarritoDTO {
     private int cantidad; 
     private double precioUnitario;
     private double Subtotal;
-    private String notaIndividual = ""; //inicia vacio para que no salga como null si se llega a imprimir
+    private String notaIndividual = ""; 
 
     public CarritoDTO() {
     }
