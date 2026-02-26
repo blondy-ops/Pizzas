@@ -179,7 +179,7 @@ public class InterfazPedidosProgramados extends JFrame {
                     rutaImg
             ));
         }
-        
+
     }
 
     public void agregegarCarrito(int idPizza, String nombrePizza, String tamano, double precioUnitario) {
@@ -329,40 +329,45 @@ public class InterfazPedidosProgramados extends JFrame {
     private void configurarMenuSuperior() {
 
         JMenuBar menuBar = new JMenuBar();
-
-        // Espaciador para empujar el menú a la derecha
         menuBar.add(Box.createHorizontalGlue());
+        UsuarioDTO usDTO = UsuarioBO.obtenerUsuarioRegistrado();
 
-        JMenu menuUsuario = new JMenu("Cuenta");
+        if (usDTO != null) {
+            int idUsuario = usDTO.getIdUsuario();
+            JMenu menuUsuario = new JMenu("Cuenta");
+            JMenuItem itemEditar = new JMenuItem("Editar Perfil");
+            JMenuItem itemCerrar = new JMenuItem("Cerrar Sesión");
+            itemEditar.addActionListener(e -> {
+                new ActualizarDatosFrame(idUsuario);
+            });
+            itemCerrar.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Seguro que deseas cerrar sesión?",
+                        "Confirmar",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (confirm == JOptionPane.YES_OPTION) {
+                    UsuarioBO.cerrarSesion();
+                    new InicioFrame();
+                    dispose();
+                }
+            });
+            menuUsuario.add(itemEditar);
+            menuUsuario.addSeparator();
+            menuUsuario.add(itemCerrar);
+            menuBar.add(menuUsuario);
 
-        JMenuItem itemEditar = new JMenuItem("Editar Perfil");
-        JMenuItem itemCerrar = new JMenuItem("Cerrar Sesión");
-
-        itemEditar.addActionListener(e -> {
-            //new ActualizarDatosFrame();
-        });
-
-        itemCerrar.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "¿Seguro que deseas cerrar sesión?",
-                    "Confirmar",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                UsuarioBO.cerrarSesion(); 
+        } else {
+            JMenu menuSesion = new JMenu("Sesión");
+            JMenuItem itemLogin = new JMenuItem("Iniciar Sesión");
+            itemLogin.addActionListener(e -> {
                 new InicioFrame();
                 dispose();
-            }
-        });
-
-        menuUsuario.add(itemEditar);
-        menuUsuario.addSeparator();
-        menuUsuario.add(itemCerrar);
-
-        menuBar.add(menuUsuario);
-
+            });
+            menuSesion.add(itemLogin);
+            menuBar.add(menuSesion);
+        }
         setJMenuBar(menuBar);
     }
 

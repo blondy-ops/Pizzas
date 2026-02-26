@@ -5,6 +5,8 @@
 package negocio.DTOs;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -12,6 +14,7 @@ import java.time.LocalDate;
  */
 public class RegistroUsuarioDTO {
 
+    private int idUsuario;
     private String nombres;
     private String apellidoPaterno;
     private String apellidoMaterno;
@@ -21,11 +24,19 @@ public class RegistroUsuarioDTO {
     private String colonia;
     private String telefono;
     private String etiqueta;
+    private List<TelefonoDTO> telefonos;
     private String correo;
     private String contrasena;
 
-    public RegistroUsuarioDTO(String nombres, String apellidoPaterno,String apellidoMaterno, LocalDate fechaNacimiento,String calle, int numero, String colonia,String telefono, String etiqueta,String correo, String contrasena) {
+    public RegistroUsuarioDTO(String nombres, String apellidoPaterno, String apellidoMaterno, LocalDate fechaNacimiento, String calle,
+            int numero,
+            String colonia,
+            String telefono,
+            String etiqueta,
+            String correo,
+            String contrasena) {
 
+        this.idUsuario = 0;
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -37,6 +48,37 @@ public class RegistroUsuarioDTO {
         this.etiqueta = etiqueta;
         this.correo = correo;
         this.contrasena = contrasena;
+        this.telefonos = new ArrayList<>();
+    }
+
+    public RegistroUsuarioDTO(
+            int idUsuario,
+            String nombres,
+            String apellidoPaterno,
+            String apellidoMaterno,
+            LocalDate fechaNacimiento,
+            String calle,
+            int numero,
+            String colonia,
+            List<TelefonoDTO> telefonos,
+            String correo,
+            String contrasena) {
+
+        this.idUsuario = idUsuario;
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.fechaNacimiento = fechaNacimiento;
+        this.calle = calle;
+        this.numero = numero;
+        this.colonia = colonia;
+        this.telefonos = telefonos;
+        this.correo = correo;
+        this.contrasena = contrasena;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
     public String getNombres() {
@@ -73,6 +115,10 @@ public class RegistroUsuarioDTO {
 
     public String getEtiqueta() {
         return etiqueta;
+    }
+
+    public List<TelefonoDTO> getTelefonos() {
+        return telefonos;
     }
 
     public String getCorreo() {

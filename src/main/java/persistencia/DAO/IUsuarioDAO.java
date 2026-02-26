@@ -18,4 +18,8 @@ public interface IUsuarioDAO {
     public int insertarUsuario(Usuario usuario) throws PersistenciaException;
 
     public boolean existeCorreo(String correo) throws PersistenciaException;
+    
+    public void actualizarUsuario(Usuario usuario) throws PersistenciaException;
+    
+    public boolean existeCorreoExceptoId(String correo, int idUsuario) throws PersistenciaException;
 }

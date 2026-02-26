@@ -42,4 +42,23 @@ public class ClienteDAO implements IClienteDAO{
             throw new PersistenciaException("Error al insertar cliente: " + e.getMessage());
         }
     }
+    public void actualizarCliente(Cliente cliente) throws PersistenciaException {
+
+    String sql = "UPDATE Clientes SET nombres=?, apellidoPaterno=?, apellidoMaterno=?, fechaNacimiento=? WHERE idUsuario=?";
+
+    try (Connection conn = conexion.crearConexion();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, cliente.getNombres());
+        ps.setString(2, cliente.getApellidoPaterno());
+        ps.setString(3, cliente.getApellidoMaterno());
+        ps.setDate(4, Date.valueOf(cliente.getFechaNacimiento()));
+        ps.setInt(5, cliente.getIdUsuario());
+
+        ps.executeUpdate();
+
+    } catch (SQLException e) {
+        throw new PersistenciaException("Error al actualizar cliente", e);
+    }
+}
 }
