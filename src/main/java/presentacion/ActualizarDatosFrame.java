@@ -121,7 +121,7 @@ public class ActualizarDatosFrame extends JFrame {
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this,
                     e.getMessage(),
-                    "Error",
+                    "Errora",
                     JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
